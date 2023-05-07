@@ -1,37 +1,14 @@
 import { useMemo, useRef, useState } from "react";
+import { faker } from "@faker-js/faker/locale/en_NG";
 
-const firstNames =
-  "John, Mary, Charles, Pickle, James, Stuart, Reina, Toby, Dick, Samuel, James, Brandon, Ron, Vera, Stanley, Helen".split(
-    ", "
-  );
-const lastNames =
-  "Holmes, Fisher, Bush, Clinton, Johnson, Farmer, Page, Gates, Musk, McDonalds, Paige, Tate".split(
-    ", "
-  );
-let _seed = 100;
-// Pseudo random number generator(Mulberry-32).
-const next = () => {
-  var t = (_seed += 0x6d2b79f5);
-  t = Math.imul(t ^ (t >>> 15), t | 1);
-  t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
-  return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
-};
-const gen = (num) => Math.floor(next() * Math.max(0, num));
-const pick = (arr) => {
-  return arr[gen(arr.length)];
-};
-const FirstName = () => pick(firstNames);
-const LastName = () => pick(lastNames);
-const pastDate = (range = 1000 * 60 * 60 * 24 * 365) =>
-  new Date(Date.now() - gen(range));
-const futureDate = (range = 1000 * 60 * 60 * 24 * 365) =>
-  new Date(Date.now() + gen(range));
-const date = (...args) => pick([pastDate(...args), futureDate(...args)]);
+const FirstName = () => faker.name.firstName();
+const LastName = () => faker.name.lastName();
+const pastDate = (days = 365) => faker.date.recent(days);
+const futureDate = (days = 365) => faker.date.soon(days);
+const date = (...args) =>
+  faker.helpers.arrayElement([pastDate(...args), futureDate(...args)]);
 const email = (firstName, lastName) =>
-  `${firstName}${pick([
-    "",
-    `.${lastName.slice(0, gen(lastName.length - 5) + 6)}`,
-  ])}${pick(["", gen(100)])})@${pick(["gmail", "outlook"])}.com`;
+  faker.internet.email(firstName, lastName);
 
 const dbs = {};
 const getDB = (name) => {
@@ -70,7 +47,7 @@ const fillProperty = (type, firstName, lastName, obj) => {
           return futureDate(Number(arg));
         case "range":
           const [min, max] = arg.split(",").map(Number);
-          return min + gen(max - min);
+          return faker.datatype.number({ min, max });
         case "insert_id":
           let db = getDB(arg);
           if (db.elements.includes(obj)) return db.elements.indexOf(obj);
@@ -98,7 +75,8 @@ const dummyData = (API) => {
     } else if (Array.isArray(API[property])) {
       const [type, minLength = 10, maxLength = 10] = API[property];
       const res_arr = [];
-      for (let j = 0, N = minLength + gen(maxLength - minLength); j < N; j++) {
+      const N = faker.datatype.number({ min: minLength, max: maxLength });
+      for (let j = 0; j < N; j++) {
         res_arr.push(dummyData({ data: type }).data);
       }
       res[property] = res_arr.filter(Boolean);
@@ -111,7 +89,8 @@ const dummyData = (API) => {
 
 export default function useDummyData(api) {
   return useMemo(() => {
-    _seed = 100; //Tried everything to preserve this across rehydration to no avail
+    //Tried everything to preserve this across rehydration to no avail so we'll just use a fixed value
+    faker.seed(100);
     return dummyData(api);
   }, [api]);
 }
