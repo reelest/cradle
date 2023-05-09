@@ -13,7 +13,6 @@ import Header from "@/components/Header";
 import { useState } from "react";
 import { Dialog } from "@headlessui/react";
 
-const API = { users: [{ name: "name", age: "range(5, 20)" }] };
 export default function Home() {
   const [forgotPasswordModalShown, showForgotPasswordModal] = useState(false);
   return (
