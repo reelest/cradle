@@ -1,12 +1,21 @@
 import Head from "next/head";
-import { Inter } from "next/font/google";
 import styles from "./home.module.css";
-import useDummyData from "@/components/dummy_data";
-const inter = Inter({ subsets: ["latin"] });
+import loginBackground from "./assets/login_background_crop.png";
+import url from "@/utils/url";
+import AppLogo from "@/components/AppLogo";
+import Link from "next/link";
+import Spacer from "@/components/Spacer";
+import TextInput from "@/components/TextInput";
+import RaisedButton from "@/components/RaisedButton";
+import FlatButton from "@/components/FlatButton";
+import Footer from "@/components/Footer";
+import Header from "@/components/Header";
+import { useState } from "react";
+import { Dialog } from "@headlessui/react";
 
 const API = { users: [{ name: "name", age: "range(5, 20)" }] };
 export default function Home() {
-  const data = useDummyData(API);
+  const [forgotPasswordModalShown, showForgotPasswordModal] = useState(false);
   return (
     <>
       <Head>
@@ -15,9 +24,53 @@ export default function Home() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <main className={`${styles.main} ${inter.className}`}>
-        {JSON.stringify(data)}
+      <Header />
+      <main className={"px-16 " + styles.main}>
+        {/* The background image with padding*/}
+        <div
+          className="container bg-cover bg-center bg-no-repeat pt-12 px-20 mx-auto mt-16 rounded-t-[3em]"
+          style={{ backgroundImage: url(loginBackground.src) }}
+        >
+          <nav className="flex text-white items-center w-full">
+            <AppLogo />
+            <Spacer />
+            <Link className="mx-5 text-style-3" href="/admissions">
+              Admissions
+            </Link>
+            <Link className="mx-5 text-style-3" href="/schools">
+              Schools
+            </Link>
+            <Link className="mx-5 text-style-3" href="/about">
+              About
+            </Link>
+            <Link className="mx-5 text-style-3" href="/contact-us">
+              Contact Us
+            </Link>
+          </nav>
+          <h1 className="text-style-4 text-white text-center mt-20 mb-10">
+            Log In
+          </h1>
+          <p className="text-style-5 text-white text-center mb-10">
+            Enter your login details to gain access to your portal
+          </p>
+          <div className="h-72" />
+        </div>
+        <div className="container mx-auto top-[-9rem] relative w-full h-36">
+          {/* TODO: get the original background and replace this with waves*/}
+          <div className="bg-white w-full md:w-1/2 lg:w-1/3 h-full rounded-t-[50%] float-left" />
+          <div className="bg-white hidden md:block md:w-1/2 lg:w-1/3 h-full rounded-t-[50%] float-right" />
+          <div className="bg-white w-full hidden lg:block lg:w-1/3 h-full rounded-t-[50%] float-right" />
+        </div>
+        <div className="card flex items-center flex-col relative top-[-26rem] mb-[-10rem]">
+          <TextInput className="my-8" placeholder="User ID or Email" />
+          <TextInput className="my-8" placeholder="Password" />
+          <RaisedButton className="my-8">Log in now</RaisedButton>
+          <FlatButton onClick={showForgotPasswordModal}>
+            Forgot password?
+          </FlatButton>
+        </div>
       </main>
+      <Footer />
     </>
   );
 }

@@ -1,0 +1,19 @@
+@import "./text_styles.css";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  @apply text-primary;
+  font-family: Poppins, sans-serif;
+}
+
+.card {
+  @apply bg-white  shadow-2xl max-w-3xl w-4/5 mx-auto px-20 pt-16 pb-12 rounded-3xl;
+}
+
+.social-bar {
+  background: rgba(205, 205, 205, 0.5);
+  backdrop-filter: blur(2px);
+  border-radius: 60px;
+}

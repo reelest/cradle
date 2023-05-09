@@ -1,6 +1,10 @@
 import { useMemo, useRef, useState } from "react";
 import { faker } from "@faker-js/faker/locale/en_NG";
 
+export const pick =
+  (...args) =>
+  () =>
+    faker.helpers.arrayElement(args);
 const FirstName = () => faker.name.firstName();
 const LastName = () => faker.name.lastName();
 const pastDate = (days = 365) => faker.date.recent(days);
@@ -20,6 +24,7 @@ const getDB = (name) => {
     });
 };
 const fillProperty = (type, firstName, lastName, obj) => {
+  if (typeof type == "function") return type();
   switch (type) {
     case "name":
       return `${firstName} ${lastName}`;
