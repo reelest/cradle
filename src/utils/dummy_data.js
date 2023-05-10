@@ -1,5 +1,6 @@
-import { useMemo, useRef, useState } from "react";
+import { useMemo, useRef } from "react";
 import { faker } from "@faker-js/faker/locale/en_NG";
+import usePromise from "@/utils/usePromise";
 
 export const pick =
   (...args) =>
@@ -99,4 +100,10 @@ export default function useDummyData(api) {
     return dummyData(api);
   }, [api]);
 }
-global.dummyData = useDummyData;
+
+//Every API either returns an object or undefined ie loading
+export const useAsyncDummyData = (API) => {
+  API = useRef(API).current;
+  const data = useDummyData(API);
+  return usePromise(() => Promise.resolve(data), [data]);
+};

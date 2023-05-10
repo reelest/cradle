@@ -1,3 +1,5 @@
+import { useLoggedIn } from "@/logic/api";
 export default function Admin() {
-  return "Administrator Page";
+  const loggedIn = useLoggedIn();
+  return String(loggedIn);
 }
