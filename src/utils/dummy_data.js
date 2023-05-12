@@ -1,6 +1,8 @@
 import { useMemo, useRef } from "react";
 import { faker } from "@faker-js/faker/locale/en_NG";
 import usePromise from "@/utils/usePromise";
+import { useDeepCompareEffect } from "react-use";
+import useDeepMemo, { useJSONMemo } from "./useDeepMemo";
 
 export const pick =
   (...args) =>
@@ -25,7 +27,6 @@ const getDB = (name) => {
     });
 };
 const fillProperty = (type, firstName, lastName, obj) => {
-  if (typeof type == "function") return type();
   switch (type) {
     case "name":
       return `${firstName} ${lastName}`;
@@ -33,12 +34,16 @@ const fillProperty = (type, firstName, lastName, obj) => {
       return firstName;
     case "lastName":
       return lastName;
+    case "phoneNumber":
+      return faker.phone.number("+234##########");
     case "email":
       return email();
     case "date":
       return date();
     case "pastDate":
       return pastDate();
+    case "image":
+      return faker.image.dataUri(400, 400);
     case "futureDate":
       return futureDate();
     default:
@@ -58,7 +63,6 @@ const fillProperty = (type, firstName, lastName, obj) => {
           let db = getDB(arg);
           if (db.elements.includes(obj)) return db.elements.indexOf(obj);
           return db.elements.push(obj);
-
         case "ref":
           const [db_name, ctr = "default"] = arg.split(",");
           db = getDB(db_name);
@@ -71,12 +75,13 @@ const fillProperty = (type, firstName, lastName, obj) => {
       }
   }
 };
-const dummyData = (API) => {
+export const dummyData = (API) => {
   let firstName = FirstName();
   let lastName = LastName();
   const res = {};
   for (let property in API) {
-    if (typeof API[property] == "string") {
+    if (typeof API[property] == "function") res[property] = API[property]();
+    else if (typeof API[property] == "string") {
       res[property] = fillProperty(API[property], firstName, lastName, API);
     } else if (Array.isArray(API[property])) {
       const [type, minLength = 10, maxLength = 10] = API[property];
@@ -94,7 +99,7 @@ const dummyData = (API) => {
 };
 
 export default function useDummyData(api) {
-  return useMemo(() => {
+  return useJSONMemo(() => {
     //Tried everything to preserve this across rehydration to no avail so we'll just use a fixed value
     faker.seed(100);
     return dummyData(api);
@@ -103,7 +108,6 @@ export default function useDummyData(api) {
 
 //Every API either returns an object or undefined ie loading
 export const useAsyncDummyData = (API) => {
-  API = useRef(API).current;
   const data = useDummyData(API);
   return usePromise(() => Promise.resolve(data), [data]);
 };

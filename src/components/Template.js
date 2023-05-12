@@ -2,7 +2,7 @@ import { Empty, None } from "@/utils/none";
 import { createElement } from "react";
 
 export default function Template({
-  as,
+  as = "div",
   children,
   className = "",
   style = None,
@@ -12,7 +12,7 @@ export default function Template({
     children: children2,
     as: as2,
     ...props2
-  } = None,
+  },
   mergeableEvents = Empty,
   ...props
 }) {

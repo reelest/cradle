@@ -10,7 +10,7 @@ body {
 
 @media not all and (min-width: 640px) {
   body {
-    font-size: 12px;
+    font-size: 12.8px;
   }
 }
 
@@ -22,4 +22,12 @@ body {
   background: rgba(205, 205, 205, 0.5);
   backdrop-filter: blur(2px);
   border-radius: 60px;
+}
+
+.shadow-1 {
+  box-shadow: 0px 3.32063px 99.619px rgba(126, 125, 170, 0.51);
+}
+
+.shadow-2 {
+  box-shadow: 0px 3.32063px 20px rgba(126, 125, 170, 0.51);
 }

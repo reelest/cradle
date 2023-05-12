@@ -10,7 +10,6 @@ class FormHandler {
     this.data = data;
     this.setData = setData;
     this.cb = cb;
-    console.log("new form data");
   }
   _update(data = {}) {
     this.data = { ...this.data, ...data };
@@ -25,7 +24,7 @@ class FormHandler {
         this.data[id] = e.target.value;
         this._update();
       },
-      value: this.data[id],
+      value: this.data[id] || "",
     };
   }
   radio(id) {
@@ -40,7 +39,7 @@ class FormHandler {
         this.data[id] = e.target.checked;
         this._update();
       },
-      value: this.data[id],
+      value: this.data[id] || false,
     };
   }
   form(id) {
