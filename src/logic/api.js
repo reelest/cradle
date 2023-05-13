@@ -3,17 +3,20 @@ import delay from "@/utils/delay";
 import useDummyData, { dummyData, useAsyncDummyData } from "@/utils/dummy_data";
 import usePromise from "@/utils/usePromise";
 
-export const useAnnouncementsAPI = () =>
-  useAsyncDummyData({ announcements: ["admission", 1, 1] });
+const ANNOUNCEMENTS_API = { announcements: ["admission", 1, 1] };
+export const useAnnouncementsAPI = () => useAsyncDummyData(ANNOUNCEMENTS_API);
 
-export const useAdminDashboardAPI = () =>
-  useAsyncDummyData({
-    years: () => ["2022/2023", "2021/2022", "2020/2021", "2019/2020"],
-    numStudents: "range(2000, 5000)",
-    numTeachers: "range(19, 100)",
-    numParents: "range(1000, 2000)",
-  });
+const DASHBOARD_API = {
+  years: () => ["2022/2023", "2021/2022", "2020/2021", "2019/2020"],
+  numStudents: "range(2000, 5000)",
+  numTeachers: "range(19, 100)",
+  numParents: "range(1000, 2000)",
+  incompleteTeacherProfiles: () => 82.5,
+};
+export const useAdminDashboardAPI = () => useAsyncDummyData(DASHBOARD_API);
+
 export const forgotPasswordAPIUrl = "/api/resetpassword";
+
 const USERS = {
   "admin@test.com": {
     password: "admin-password",
@@ -32,6 +35,7 @@ const USERS = {
     role: "parent",
   },
 };
+
 /**
  * @param {FormData} data
  */
@@ -58,6 +62,7 @@ export const doLogout = async () => {
   localStorage.removeItem("user-logged-in");
   setUser(null);
 };
+
 export const errorToUserString = (e) => {
   switch (e) {
     case "user":
@@ -77,6 +82,7 @@ const USER_API = dummyData({
   phoneNumber: "phoneNumber",
   photoURL: "image",
 });
+
 export const [useUser, , setUser] = createSubscription(async (setData) => {
   const loggedIn = localStorage.getItem("user-logged-in") ?? null;
   await delay(3000);

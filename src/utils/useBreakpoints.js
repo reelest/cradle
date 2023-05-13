@@ -2,7 +2,6 @@ import { useWindowSize } from "react-use";
 
 export default function useBreakpoints() {
   const windowWidth = useWindowSize().width;
-  console.log(windowWidth);
   return {
     xs: windowWidth < 640,
     sm: windowWidth >= 640,

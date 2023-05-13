@@ -99,7 +99,7 @@ export const dummyData = (API) => {
 };
 
 export default function useDummyData(api) {
-  return useJSONMemo(() => {
+  return useMemo(() => {
     //Tried everything to preserve this across rehydration to no avail so we'll just use a fixed value
     faker.seed(100);
     return dummyData(api);

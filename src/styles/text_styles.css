@@ -5,6 +5,20 @@
   line-height: 30px;
 }
 
+.font-20b {
+  font-family: Poppins;
+  font-size: 1.25em;
+  font-weight: 700;
+  line-height: 30px;
+}
+
+.font-20t {
+  font-family: Poppins;
+  font-size: 1.25em;
+  font-weight: 500;
+  line-height: 30px;
+}
+
 .font-22b {
   font-family: Poppins;
   font-size: 1.375em;

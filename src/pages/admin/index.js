@@ -11,7 +11,7 @@ import teachers from "./assets/teachers_32.svg";
 import spaceDashboard from "./assets/space_dashboard.svg";
 import Head from "next/head";
 import useBreakpoints from "@/utils/useBreakpoints";
-import { useState } from "react";
+import { useLayoutEffect, useRef, useState } from "react";
 import searchIcon from "./assets/search.svg";
 import Sidebar from "@/components/Sidebar";
 import TextInput, { TextInputDecor } from "@/components/TextInput";
@@ -19,7 +19,9 @@ import Image from "next/image";
 import Spacer from "@/components/Spacer";
 import EllipsisVerticalIcon from "@heroicons/react/20/solid/EllipsisVerticalIcon";
 import { formatNumber } from "@/utils/formatNumber";
+import * as d3 from "d3";
 
+console.log({ d3 });
 const ADMIN_TABS = [
   {
     name: "Dashboard",
@@ -60,14 +62,13 @@ export default function Admin() {
   );
 }
 const MainLayout = () => {
-  // const user = useUser();
   const data = useAdminDashboardAPI();
-  console.log({ yearsData: data });
+  console.log("data :>> ", data);
   return (
     <div className="px-4 py-16 sm:px-8">
       <TopRow />
-      <div className="">
-        <div className="shadow-1 rounded-lg px-12 my-8 py-6 ">
+      <div className="flex z-[500]">
+        <div className="shadow-1 rounded-lg px-8 my-8 py-6 flex-grow">
           <div className="flex justify-between align-baseline">
             <h2 className="font-36b">Overview</h2>
             <select
@@ -82,9 +83,9 @@ const MainLayout = () => {
             </select>
           </div>
           <div className="flex">
-            <div className="shadow-2 rounded-lg p-3 m-4">
+            <div className="basis-64 shadow-2 rounded-xl p-3 my-4 mx-2">
               <EllipsisVerticalIcon width={24} className="ml-auto block" />
-              <div class="mx-auto px-5 pt-1 pb-2">
+              <div class="text-center mx-auto px-5 pt-1 pb-2">
                 <Image
                   src={students}
                   alt="students"
@@ -96,9 +97,9 @@ const MainLayout = () => {
               </div>
               <div className="text-center">Total Students</div>
             </div>
-            <div className="shadow-2 rounded-lg p-3 m-4">
+            <div className="basis-64 shadow-2 rounded-xl p-3 my-4 mx-2">
               <EllipsisVerticalIcon width={24} className="ml-auto block" />
-              <div class="mx-auto px-5 pt-1 pb-2">
+              <div class="text-center mx-auto px-5 pt-1 pb-2">
                 <Image
                   src={teachers}
                   alt="teachers"
@@ -110,9 +111,9 @@ const MainLayout = () => {
               </div>
               <div className="text-center">Total Teachers</div>
             </div>
-            <div className="shadow-2 rounded-lg p-3 m-4">
+            <div className="basis-64 shadow-2 rounded-xl p-3 my-4 mx-2">
               <EllipsisVerticalIcon width={24} className="ml-auto block" />
-              <div class="mx-auto px-5 pt-1 pb-2">
+              <div class="text-center mx-auto px-5 pt-1 pb-2">
                 <Image
                   src={parents}
                   alt="parents"
@@ -126,9 +127,31 @@ const MainLayout = () => {
             </div>
           </div>
         </div>
+        <div className="basis-64 shadow-1 rounded-lg py-6 my-8 mx-8 flex flex-col">
+          <h6 className="font-20b text-center">Incomplete Teacher Profiles</h6>
+          <div className="flex-grow">
+            <PieChart percent={data?.incompleteTeacherProfiles} />
+          </div>
+          <p className="font-20t text-center">
+            {data?.incompleteTeacherProfiles}
+          </p>
+        </div>
       </div>
     </div>
   );
+};
+
+const PieChart = ({ percent }) => {
+  const ref = useRef();
+  useLayoutEffect(
+    function () {
+      ref.current.innerHTML = "";
+      const svg = d3.select(ref.current).append("svg");
+      svg.append("circle").attr("class", "bg-primaryDark");
+    },
+    [percent]
+  );
+  return <div ref={ref}></div>;
 };
 
 const TopRow = () => {
@@ -145,11 +168,11 @@ const TopRow = () => {
           className="inline-block mx-16 w-96"
           startIcon={<Image src={searchIcon} alt="" />}
         >
-          <TextInput variant="search" />
+          <TextInput variant="search" className="z-10" />
         </TextInputDecor>
         <Image
           placeholder="empty"
-          src={user.photoURL}
+          src={user?.photoURL}
           width={56}
           height={56}
           alt="user photo"
@@ -164,7 +187,7 @@ const DashboardLayout = ({ children, tabs }) => {
   const isWideScreen = useBreakpoints().lg;
   const [isOpen, setOpen] = useState(false);
   return (
-    <div className="flex h-screen">
+    <div className="flex h-screen overflow-hidden w-screen">
       <Sidebar
         isOpen={isOpen}
         onClose={() => setOpen(false)}

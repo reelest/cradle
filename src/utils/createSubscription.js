@@ -12,7 +12,6 @@ export default function createSubscription(onSubscribe) {
   const subscribe = function (onNewData) {
     subscribers.push(onNewData);
     if (subscribers.length === 1) {
-      //First subscriber might have different hooks
       onUnsubscribe = onSubscribe(dispatch);
     }
     if (currentData !== undefined) onNewData(currentData);
@@ -35,20 +34,9 @@ export default function createSubscription(onSubscribe) {
   return [
     function useSubscription() {
       const [data, setData] = useState(currentData);
-      const unsubscribe = useRef(false);
-      if (!unsubscribe.current)
-        unsubscribe.current = subscribe(setData) || true;
-      useEffect(
-        () => () => {
-          try {
-            if (typeof unsubscribe.current == "function") unsubscribe.current();
-          } finally {
-            unsubscribe.current = false;
-          }
-        },
-        []
-      );
-      /** Changing data without update hooks causes rendering artifacts */
+      useEffect(function () {
+        return subscribe(setData);
+      }, []);
       return data;
     },
     subscribe,

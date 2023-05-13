@@ -1,4 +1,3 @@
-import { usePreviousDistinct } from "react-use";
 import deepEqual from "deep-equal";
 import { useRef } from "react";
 export default function useDeepMemo(fn, deps) {
@@ -10,6 +9,7 @@ export default function useDeepMemo(fn, deps) {
   return (store.current.result = fn());
 }
 
+// FOr some reason, this causes rendering artifacts in react
 export function useJSONMemo(fn, deps) {
   const store = useRef({ deps: [], result: undefined });
   if (JSON.stringify(store.current.deps) === JSON.stringify(deps)) {
