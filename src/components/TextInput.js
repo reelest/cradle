@@ -6,9 +6,9 @@ export default function TextInput({ variant = "gray", ...props }) {
       as="input"
       className={
         variant === "gray"
-          ? "px-5 py-5 bg-transparentGray placeholder:text-input-placeholder font-20 rounded-xl w-full focus-visible:outline-primaryLight focus:outline-primaryLight"
+          ? "px-5 py-4 bg-transparentGray placeholder:text-input-placeholder font-20 rounded-xl w-full focus-visible:outline-primaryLight focus:outline-primaryLight"
           : variant === "search"
-          ? "px-5 py-5 shadow-1 border-0 w-full rounded-full outline-none"
+          ? "px-5 py-4 bg-white shadow-1 border-0 w-full rounded-full outline-none"
           : ""
       }
       props={props}

@@ -5,23 +5,15 @@ import accountBalanceWallet from "./assets/account_balance_wallet.svg";
 import group from "./assets/group.svg";
 import hub from "./assets/hub.svg";
 import school from "./assets/school.svg";
-import students from "./assets/students_32.svg";
-import parents from "./assets/parents_32.svg";
-import teachers from "./assets/teachers_32.svg";
 import spaceDashboard from "./assets/space_dashboard.svg";
 import Head from "next/head";
-import useBreakpoints from "@/utils/useBreakpoints";
-import { useLayoutEffect, useRef, useState } from "react";
-import searchIcon from "./assets/search.svg";
-import Sidebar from "@/components/Sidebar";
-import TextInput, { TextInputDecor } from "@/components/TextInput";
-import Image from "next/image";
-import Spacer from "@/components/Spacer";
-import EllipsisVerticalIcon from "@heroicons/react/20/solid/EllipsisVerticalIcon";
-import { formatNumber } from "@/utils/formatNumber";
-import * as d3 from "d3";
+import Table from "@/components/Table";
+import Box from "../../components/Box";
+import TopRow from "./TopRow";
+import FirstRow from "./FirstRow";
+import DashboardLayout from "@/components/DashboardLayout";
+import MiddleRow from "./MiddleRow";
 
-console.log({ d3 });
 const ADMIN_TABS = [
   {
     name: "Dashboard",
@@ -61,140 +53,13 @@ export default function Admin() {
     </>
   );
 }
+
 const MainLayout = () => {
-  const data = useAdminDashboardAPI();
-  console.log("data :>> ", data);
   return (
     <div className="px-4 py-16 sm:px-8">
       <TopRow />
-      <div className="flex z-[500]">
-        <div className="shadow-1 rounded-lg px-8 my-8 py-6 flex-grow">
-          <div className="flex justify-between align-baseline">
-            <h2 className="font-36b">Overview</h2>
-            <select
-              disabled={!data}
-              className="border-[0.5px] border-disabled outline-0"
-            >
-              {data?.years?.map?.((e) => (
-                <option key={e} value={e}>
-                  {e}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div className="flex">
-            <div className="basis-64 shadow-2 rounded-xl p-3 my-4 mx-2">
-              <EllipsisVerticalIcon width={24} className="ml-auto block" />
-              <div class="text-center mx-auto px-5 pt-1 pb-2">
-                <Image
-                  src={students}
-                  alt="students"
-                  className="inline-block align-middle mx-2"
-                />
-                <span className="font-32t inline-block align-middle mx-2">
-                  {formatNumber(data?.numStudents)}
-                </span>
-              </div>
-              <div className="text-center">Total Students</div>
-            </div>
-            <div className="basis-64 shadow-2 rounded-xl p-3 my-4 mx-2">
-              <EllipsisVerticalIcon width={24} className="ml-auto block" />
-              <div class="text-center mx-auto px-5 pt-1 pb-2">
-                <Image
-                  src={teachers}
-                  alt="teachers"
-                  className="inline-block align-middle mx-2"
-                />
-                <span className="text-primaryLight font-32t inline-block align-middle mx-2">
-                  {formatNumber(data?.numTeachers)}
-                </span>
-              </div>
-              <div className="text-center">Total Teachers</div>
-            </div>
-            <div className="basis-64 shadow-2 rounded-xl p-3 my-4 mx-2">
-              <EllipsisVerticalIcon width={24} className="ml-auto block" />
-              <div class="text-center mx-auto px-5 pt-1 pb-2">
-                <Image
-                  src={parents}
-                  alt="parents"
-                  className="inline-block align-middle mx-2"
-                />
-                <span className="text-secondary font-32t inline-block align-middle mx-2">
-                  {formatNumber(data?.numParents)}
-                </span>
-              </div>
-              <div className="text-center">Total Parents</div>
-            </div>
-          </div>
-        </div>
-        <div className="basis-64 shadow-1 rounded-lg py-6 my-8 mx-8 flex flex-col">
-          <h6 className="font-20b text-center">Incomplete Teacher Profiles</h6>
-          <div className="flex-grow">
-            <PieChart percent={data?.incompleteTeacherProfiles} />
-          </div>
-          <p className="font-20t text-center">
-            {data?.incompleteTeacherProfiles}
-          </p>
-        </div>
-      </div>
-    </div>
-  );
-};
-
-const PieChart = ({ percent }) => {
-  const ref = useRef();
-  useLayoutEffect(
-    function () {
-      ref.current.innerHTML = "";
-      const svg = d3.select(ref.current).append("svg");
-      svg.append("circle").attr("class", "bg-primaryDark");
-    },
-    [percent]
-  );
-  return <div ref={ref}></div>;
-};
-
-const TopRow = () => {
-  const user = useUser();
-  return (
-    <div className="flex px-8 items-start w-full">
-      <div>
-        <p className="font-20">{`Hi ${user?.name}`}</p>
-        <h1 className="font-36b">Welcome back, Admin</h1>
-      </div>
-      <Spacer />
-      <div>
-        <TextInputDecor
-          className="inline-block mx-16 w-96"
-          startIcon={<Image src={searchIcon} alt="" />}
-        >
-          <TextInput variant="search" className="z-10" />
-        </TextInputDecor>
-        <Image
-          placeholder="empty"
-          src={user?.photoURL}
-          width={56}
-          height={56}
-          alt="user photo"
-          className="inline-block rounded-full"
-        />
-      </div>
-    </div>
-  );
-};
-
-const DashboardLayout = ({ children, tabs }) => {
-  const isWideScreen = useBreakpoints().lg;
-  const [isOpen, setOpen] = useState(false);
-  return (
-    <div className="flex h-screen overflow-hidden w-screen">
-      <Sidebar
-        isOpen={isOpen}
-        onClose={() => setOpen(false)}
-        isStatic={isWideScreen}
-        tabs={tabs}
-      />
-      <main className="relative flex-grow">{children}</main>
+      <FirstRow />
+      <MiddleRow />
     </div>
   );
 };

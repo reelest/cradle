@@ -1,3 +1,10 @@
+.font-16t {
+  font-family: Poppins;
+  font-size: 1em;
+  font-weight: 400;
+  line-height: 24px;
+}
+
 .font-20 {
   font-family: Poppins;
   font-size: 1.25em;

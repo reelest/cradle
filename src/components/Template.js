@@ -25,7 +25,9 @@ export default function Template({
       ...props2,
       ...mergeEvents(props, props2, mergeableEvents),
     },
-    children && children2 ? [...children, ...children2] : children || children2
+    children && children2
+      ? [].concat(children).concat(children2)
+      : children || children2
   );
 }
 

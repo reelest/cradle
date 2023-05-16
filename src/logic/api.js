@@ -1,6 +1,10 @@
 import createSubscription from "@/utils/createSubscription";
 import delay from "@/utils/delay";
-import useDummyData, { dummyData, useAsyncDummyData } from "@/utils/dummy_data";
+import useDummyData, {
+  dummyData,
+  pick,
+  useAsyncDummyData,
+} from "@/utils/dummy_data";
 import usePromise from "@/utils/usePromise";
 
 const ANNOUNCEMENTS_API = { announcements: ["admission", 1, 1] };
@@ -11,9 +15,21 @@ const DASHBOARD_API = {
   numStudents: "range(2000, 5000)",
   numTeachers: "range(19, 100)",
   numParents: "range(1000, 2000)",
-  incompleteTeacherProfiles: () => 82.5,
+  incompleteTeacherProfiles: () =>
+    Math.round(dummyData({ data: "range(0, 700)" }).data / 0.07) / 100,
+};
+
+const REGISTRATIONS_API = {
+  students: [
+    {
+      name: "name",
+      entranceClass: pick("JSS 1", "SSS 1"),
+      gender: pick("M", "F"),
+    },
+  ],
 };
 export const useAdminDashboardAPI = () => useAsyncDummyData(DASHBOARD_API);
+export const useRegistrationsAPI = () => useAsyncDummyData(REGISTRATIONS_API);
 
 export const forgotPasswordAPIUrl = "/api/resetpassword";
 

@@ -98,16 +98,17 @@ export const dummyData = (API) => {
   return res;
 };
 
-export default function useDummyData(api) {
+export default function useDummyData(api, seed = 100) {
   return useMemo(() => {
     //Tried everything to preserve this across rehydration to no avail so we'll just use a fixed value
-    faker.seed(100);
+    faker.seed(seed);
     return dummyData(api);
-  }, [api]);
+  }, [api, seed]);
 }
 
 //Every API either returns an object or undefined ie loading
+const ASYNC_SEED = Math.random();
 export const useAsyncDummyData = (API) => {
-  const data = useDummyData(API);
+  const data = useDummyData(API, ASYNC_SEED);
   return usePromise(() => Promise.resolve(data), [data]);
 };
