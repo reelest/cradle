@@ -13,6 +13,7 @@ import TopRow from "./TopRow";
 import FirstRow from "./FirstRow";
 import DashboardLayout from "@/components/DashboardLayout";
 import MiddleRow from "./MiddleRow";
+import BottomRow from "./BottomRow";
 
 const ADMIN_TABS = [
   {
@@ -60,6 +61,7 @@ const MainLayout = () => {
       <TopRow />
       <FirstRow />
       <MiddleRow />
+      <BottomRow />
     </div>
   );
 };

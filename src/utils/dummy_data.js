@@ -107,7 +107,7 @@ export default function useDummyData(api, seed = 100) {
 }
 
 //Every API either returns an object or undefined ie loading
-const ASYNC_SEED = Math.random();
+const ASYNC_SEED = Math.random() * 100;
 export const useAsyncDummyData = (API) => {
   const data = useDummyData(API, ASYNC_SEED);
   return usePromise(() => Promise.resolve(data), [data]);

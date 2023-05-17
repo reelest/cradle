@@ -5,7 +5,9 @@ import useDummyData, {
   pick,
   useAsyncDummyData,
 } from "@/utils/dummy_data";
+import sentenceCase from "@/utils/sentenceCase";
 import usePromise from "@/utils/usePromise";
+import { faker } from "@faker-js/faker/locale/en_NG";
 
 const ANNOUNCEMENTS_API = { announcements: ["admission", 1, 1] };
 export const useAnnouncementsAPI = () => useAsyncDummyData(ANNOUNCEMENTS_API);
@@ -17,7 +19,21 @@ const DASHBOARD_API = {
   numParents: "range(1000, 2000)",
   incompleteTeacherProfiles: () =>
     Math.round(dummyData({ data: "range(0, 700)" }).data / 0.07) / 100,
+  events: [
+    {
+      date: () => faker.date.soon(5),
+      title: () => sentenceCase(faker.git.commitMessage()),
+      scope: {
+        teachers: faker.datatype.boolean,
+        students: faker.datatype.boolean,
+        parents: faker.datatype.boolean,
+      },
+    },
+    3,
+    3,
+  ],
 };
+export const useAdminDashboardAPI = () => useAsyncDummyData(DASHBOARD_API);
 
 const REGISTRATIONS_API = {
   students: [
@@ -28,8 +44,19 @@ const REGISTRATIONS_API = {
     },
   ],
 };
-export const useAdminDashboardAPI = () => useAsyncDummyData(DASHBOARD_API);
 export const useRegistrationsAPI = () => useAsyncDummyData(REGISTRATIONS_API);
+
+const PAYMENTS_API = {
+  payments: [
+    {
+      name: "name",
+      desc: faker.lorem.sentence,
+      amount: "range(10000, 450000)",
+      date: faker.date.recent,
+    },
+  ],
+};
+export const usePaymentsAPI = () => useAsyncDummyData(PAYMENTS_API);
 
 export const forgotPasswordAPIUrl = "/api/resetpassword";
 
