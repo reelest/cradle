@@ -1,5 +1,5 @@
 import { useAnnouncementsAPI } from "@/logic/api";
-import RaisedButton from "./RaisedButton";
+import ThemedButton from "./ThemedButton";
 import Link from "next/link";
 
 export default function Header({ showAnnouncements = true }) {
@@ -30,7 +30,7 @@ const createHeader = (announcement) => {
                   Portal
                 </Link>
                 <span className="border-l-2 border-white h-10 inline-block mx-4" />
-                <RaisedButton variant="small">Register</RaisedButton>
+                <ThemedButton variant="small">Register</ThemedButton>
               </div>
             </div>
           </div>

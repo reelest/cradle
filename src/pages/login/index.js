@@ -6,8 +6,8 @@ import AppLogo from "@/components/AppLogo";
 import Link from "next/link";
 import Spacer from "@/components/Spacer";
 import TextInput from "@/components/TextInput";
-import RaisedButton from "@/components/RaisedButton";
-import FlatButton from "@/components/FlatButton";
+import ThemedButton from "@/components/ThemedButton";
+import TextButton from "@/components/TextButton";
 import Footer from "@/components/Footer";
 import Header from "@/components/Header";
 import { useState } from "react";
@@ -26,6 +26,7 @@ export default function LoginPage() {
     <>
       <Head>
         <title>Cradle</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
         <meta name="description" content="Cradle Website" />
       </Head>
       <Header />
@@ -102,12 +103,16 @@ function LoginForm({ setShowForgotPassword }) {
         className="my-8"
         placeholder="Password"
       />
-      <RaisedButton disabled={!enabled} className="my-8" caret>
+      <ThemedButton disabled={!enabled} className="my-8" caret>
         Log in now
-      </RaisedButton>
-      <FlatButton noSubmit onClick={() => setShowForgotPassword(true)}>
+      </ThemedButton>
+      <TextButton
+        className="p-5"
+        noSubmit
+        onClick={() => setShowForgotPassword(true)}
+      >
         Forgot password?
-      </FlatButton>
+      </TextButton>
       <UserRedirect noAuth />
     </form>
   );
@@ -153,9 +158,9 @@ const PasswordModal = ({ open, onClose }) => {
             placeholder="Email"
             type="email"
           ></TextInput>
-          <RaisedButton className="mt-6 mb-16" caret>
+          <ThemedButton className="mt-6 mb-16" caret>
             Send
-          </RaisedButton>
+          </ThemedButton>
         </Dialog.Panel>
       </div>
     </Dialog>

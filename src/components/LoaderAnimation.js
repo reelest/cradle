@@ -1,10 +1,11 @@
 import Template from "./Template";
 
-export default function LoaderAnimation(props) {
+export default function LoaderAnimation({ small, ...props }) {
   return (
     <Template
       as="svg"
       viewBox="0 0 30 30"
+      className={small ? "w-10 block mx-auto my-4" : ""}
       xmlns="http://www.w3.org/2000/svg"
       props={props}
     >

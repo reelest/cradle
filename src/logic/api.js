@@ -44,7 +44,20 @@ const REGISTRATIONS_API = {
     },
   ],
 };
+const ADMINISTRATORS_API = {
+  admins: [
+    {
+      name: "name",
+      email: "email",
+      dateCreated: "pastDate(1)",
+      status: faker.datatype.boolean,
+    },
+    25,
+    36,
+  ],
+};
 export const useRegistrationsAPI = () => useAsyncDummyData(REGISTRATIONS_API);
+export const useAdministratorsAPI = () => useAsyncDummyData(ADMINISTRATORS_API);
 
 const PAYMENTS_API = {
   payments: [

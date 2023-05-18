@@ -1,6 +1,19 @@
 import range from "@/utils/range";
+import Template from "./Template";
+import ThemedButton from "./ThemedButton";
+import mergeProps from "@/utils/mergeProps";
+import LoaderAnimation from "./LoaderAnimation";
 
+const borderSpacings = [
+  "border-spacing-y-0",
+  "border-spacing-y-1",
+  "border-spacing-y-2",
+  "border-spacing-y-3",
+  "border-spacing-y-4",
+  "border-spacing-y-5",
+];
 const renderColumn = ({ data, row, col, classes, attrs, next }) => {
+  console.log(attrs);
   return row >= 0 ? (
     <td key={row + ";" + col} className={classes.join(" ")} {...attrs}>
       {Array.isArray(data) ? data[row][col] : data}
@@ -39,23 +52,93 @@ export default function Table({
   data,
   rows = Array.isArray(data) ? data.length : 0,
   cols = Array.isArray(data?.[0]) ? data[0].length : 0,
+  loading = false,
   headers,
-  headerClass = "border-b font-20t text-left",
+  scrollable,
+  headerClass = "border-b text-left",
+  bodyClass = "font-20 leading-relaxed",
+  rowClass = "",
+  rowSpacing = 0,
+  onClickRow,
   renderHooks = [],
-  variant = "variant-0",
 }) {
-  return (
-    <table className="w-full">
+  const table = (
+    <table
+      className={`w-full leading border-separate ${borderSpacings[rowSpacing]}`}
+    >
       <thead className={headerClass}>
-        {range(cols).map((j) => callHooks(headers, -1, j, [], {}, renderHooks))}
+        <tr>
+          {range(cols).map((col) =>
+            callHooks(headers, -1, col, [], {}, renderHooks)
+          )}
+        </tr>
       </thead>
-      <tbody className="font-20">
-        {range(rows).map((i) => (
-          <tr key={i}>
-            {range(cols).map((j) => callHooks(data, i, j, [], {}, renderHooks))}
-          </tr>
-        ))}
+      <tbody className={bodyClass}>
+        {loading ? (
+          <td colspan={100} className="w-full py-3">
+            <LoaderAnimation small />
+          </td>
+        ) : (
+          range(rows).map((row) => (
+            <tr
+              key={row}
+              className={
+                typeof rowClass === "function" ? rowClass(row) : rowClass
+              }
+              onClick={onClickRow ? (e) => onClickRow(e, row) : undefined}
+            >
+              {range(cols).map((j) =>
+                callHooks(data, row, j, [], {}, renderHooks)
+              )}
+            </tr>
+          ))
+        )}
       </tbody>
     </table>
   );
+  if (scrollable)
+    return <div className="max-w-full px-1 overflow-x-auto">{table}</div>;
+  else return table;
 }
+
+export const TableHeader = (props) => (
+  <Template props={props} className="flex justify-between mb-4" />
+);
+export const TableButton = (props) => (
+  <Template
+    props={props}
+    as={ThemedButton}
+    variant="redText"
+    className="flex items-baseline"
+  />
+);
+
+/**Default Hooks */
+export const addHeaderClass =
+  (className) =>
+  ({ row, classes, next }) =>
+    row < 0 ? next({ classes: classes.concat(className) }) : next();
+export const supplyHeader =
+  (getHeader) =>
+  ({ row, col, next }) =>
+    row < 0 ? next({ data: getHeader(col) }) : next();
+export const addClassToColumns =
+  (className, columns = null) =>
+  ({ row, col, classes, next }) =>
+    row >= 0 && (!columns || columns.includes(col))
+      ? next({ classes: classes.concat(className) })
+      : next();
+export const onClickHeader =
+  (onClick, columns) =>
+  ({ row, col, next, attrs }) =>
+    row < 0 && (!columns || columns.includes(col))
+      ? next({
+          attrs: mergeProps(attrs, { onClick: (e) => onClick(e, col) }, [
+            "onClick",
+          ]),
+        })
+      : next();
+export const supplyValue =
+  (getValue) =>
+  ({ row, col, next }) =>
+    row >= 0 ? next({ data: getValue(row, col) }) : next();

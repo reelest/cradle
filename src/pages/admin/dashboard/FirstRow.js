@@ -3,9 +3,9 @@ import PieChart from "@/components/PieChart";
 import EllipsisVerticalIcon from "@heroicons/react/20/solid/EllipsisVerticalIcon";
 import Image from "next/image";
 
-import students from "./assets/students_32.svg";
-import parents from "./assets/parents_32.svg";
-import teachers from "./assets/teachers_32.svg";
+import students from "../assets/students_32.svg";
+import parents from "../assets/parents_32.svg";
+import teachers from "../assets/teachers_32.svg";
 
 import { formatNumber } from "@/utils/formatNumber";
 import { useAdminDashboardAPI } from "@/logic/api";
@@ -14,13 +14,10 @@ const FirstRow = () => {
   const data = useAdminDashboardAPI();
   return (
     <Row className="justify-center my-8">
-      <Box className="flex-grow" boxClass="px-6 py-4">
+      <Box className="flex-grow" boxClass="px-6 py-4 2xl:py-6">
         <div className="flex justify-between align-baseline">
           <h2 className="font-36b">Overview</h2>
-          <select
-            disabled={!data}
-            className="border-[0.5px] border-disabled outline-0"
-          >
+          <select disabled={!data} className="select-1">
             {data?.years?.map?.((e) => (
               <option key={e} value={e}>
                 {e}

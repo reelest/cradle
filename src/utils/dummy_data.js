@@ -3,6 +3,7 @@ import { faker } from "@faker-js/faker/locale/en_NG";
 import usePromise from "@/utils/usePromise";
 import { useDeepCompareEffect } from "react-use";
 import useDeepMemo, { useJSONMemo } from "./useDeepMemo";
+import delay from "./delay";
 
 export const pick =
   (...args) =>
@@ -37,7 +38,7 @@ const fillProperty = (type, firstName, lastName, obj) => {
     case "phoneNumber":
       return faker.phone.number("+234##########");
     case "email":
-      return email();
+      return email(firstName, lastName).toLowerCase();
     case "date":
       return date();
     case "pastDate":
@@ -110,5 +111,8 @@ export default function useDummyData(api, seed = 100) {
 const ASYNC_SEED = Math.random() * 100;
 export const useAsyncDummyData = (API) => {
   const data = useDummyData(API, ASYNC_SEED);
-  return usePromise(() => Promise.resolve(data), [data]);
+  return usePromise(async () => {
+    await delay(1000 + Math.random() * 5000);
+    return data;
+  }, [data]);
 };
