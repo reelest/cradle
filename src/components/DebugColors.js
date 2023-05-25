@@ -1,4 +1,4 @@
-import { colors, ColorFilters } from "@/pages/admin/colors";
+import { colors, ColorFilters } from "@/components/colors";
 
 export default function DebugColors() {
   return (

@@ -1,4 +1,4 @@
-import tailwindConfig from "../../../tailwind.config";
+import tailwindConfig from "../../tailwind.config";
 export const colors = tailwindConfig.theme.extend.colors;
 export const ColorFilters = {
   primary:

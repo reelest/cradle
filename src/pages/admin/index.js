@@ -12,6 +12,7 @@ import MainView from "./dashboard";
 import UsersView from "./users";
 import useScrollAnchor from "@/utils/useScrollAnchor";
 import AcademicsView from "./academic";
+import FinancialsView from "./financial";
 
 const ADMIN_TABS = [
   {
@@ -32,6 +33,7 @@ const ADMIN_TABS = [
   {
     name: "Financial",
     icon: accountBalanceWallet,
+    component: FinancialsView,
   },
   {
     name: "Communication",

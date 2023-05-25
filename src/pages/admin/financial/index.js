@@ -35,67 +35,9 @@ import Printed from "@/components/Printed";
 import AppLogo from "@/components/AppLogo";
 import delay from "@/utils/delay";
 
-const TABS = {
-  courses: {
-    name: "Courses",
-    component: Courses,
-  },
-  classes: {
-    name: "Classes",
-    component: Classes,
-  },
-  students: {
-    name: "Students",
-    component: Students,
-  },
-};
-
-export default function AcademicsView() {
+export default function FinancialsView() {
   const [active, setActive] = useState("courses");
   const [schoolType, setSchoolType] = useState("high school");
-  const ActiveTab = TABS[active].component;
-  const scrollAnchor = useScrollAnchor(ActiveTab);
-  return (
-    <div className="pt-8 flex flex-col pr-12 pl-8">
-      {scrollAnchor}
-      <div className="text-right w-full">
-        <ProfilePic />
-      </div>
-      <h1 className="font-36b">Academics</h1>
-      <div class="flex border-b border-transparentGray py-8 mb-8 justify-end">
-        <ul>
-          {Object.keys(TABS).map((e, i) => (
-            <ThemedButton
-              as="li"
-              variant="classic"
-              bg={active === e ? "bg-primaryLight" : "bg-white"}
-              color={active === e ? "text-white" : "text-black2"}
-              onClick={() => setActive(e)}
-              className="inline-block mx-4 shadow-1"
-              key={e}
-            >
-              {TABS[e].name}
-            </ThemedButton>
-          ))}
-        </ul>
-        <Spacer />
-        <select
-          className="select-1"
-          value={schoolType}
-          onChange={(e) => setSchoolType(e.target.value)}
-        >
-          <option value="high school">High School</option>
-          <option value="montessori">Montessori</option>
-        </select>
-      </div>
-      <h2 className="font-32b">{TABS[active].name}</h2>
-      <ActiveTab schoolType={schoolType} />
-      <div className="h-8" />
-    </div>
-  );
-}
-
-function Courses({ schoolType }) {
   const classes = useClassesAPI(schoolType)?.classes;
   const [currentClass, selectClass] = useArrayState(classes);
   const courses = useCoursesAPI(currentClass)?.courses;
@@ -115,16 +57,26 @@ function Courses({ schoolType }) {
     () => courses && courses.filter((e) => e.branch === branch),
     [branch, courses]
   );
-  return (
-    <>
-      <div className="flex flex-wrap items-center justify-center mt-4 mb-8">
-        <SearchInput />
-        <ThemedButton variant="classic" className="flex items-center my-2">
-          <span>Create a new course</span>
-          <PlusCircleIcon className="ml-3" width={20} />
-        </ThemedButton>
-      </div>
 
+  return (
+    <div className="pt-8 flex flex-col pr-12 pl-8">
+      <div className="text-right w-full">
+        <ProfilePic />
+      </div>
+      <h1 className="font-36b">Financial</h1>
+      <div class="flex border-b border-transparentGray py-8 mb-8 justify-end">
+        <SearchInput />
+        <Spacer />
+        <select
+          className="select-1"
+          value={schoolType}
+          onChange={(e) => setSchoolType(e.target.value)}
+        >
+          <option value="high school">High School</option>
+          <option value="montessori">Montessori</option>
+        </select>
+      </div>
+      <div className="h-8" />
       <TabbedTable
         currentTab={currentClass}
         onSelectTab={selectClass}
@@ -176,75 +128,9 @@ function Courses({ schoolType }) {
           clipColumn(1, "max-w-[30vw] pr-8"),
         ]}
       />
-    </>
+    </div>
   );
 }
-
-function Classes({ schoolType }) {
-  const tabs = ["Created Classes"];
-  const [currentClass, selectClass] = useArrayState(tabs);
-  const courses = useCoursesAPI(currentClass)?.courses;
-
-  const branches = useMemo(
-    () =>
-      courses &&
-      courses
-        .map((e) => e.branch)
-        .sort()
-        .filter(uniq),
-    [courses]
-  );
-  const [branch, setBranch] = useArrayState(branches);
-
-  const filtered = useMemo(
-    () => courses && courses.filter((e) => e.branch === branch),
-    [branch, courses]
-  );
-  return (
-    <>
-      <div className="flex flex-wrap items-center justify-center mt-4 mb-8">
-        <SearchInput />
-        <ThemedButton variant="classic" className="flex items-center my-2">
-          <span>Create a new course</span>
-          <PlusCircleIcon className="ml-3" width={20} />
-        </ThemedButton>
-      </div>
-
-      <TabbedTable
-        currentTab={currentClass}
-        onSelectTab={selectClass}
-        tabHeaders={tabs}
-        printHeader={
-          <>
-            <AppLogo />
-            <h1>Classes</h1>
-          </>
-        }
-        headers={["S/N", "CLASS", "ASSIGNED TEACHER"]}
-        results={filtered}
-        renderHooks={[
-          addClassToColumns("min-w-[240px]", [0]),
-          addClassToColumns("min-w-[120px]", [2]),
-          supplyValue((row, col) => {
-            const item = filtered[row];
-            if (!item) return "--";
-            switch (col) {
-              case 0:
-                return row + 1;
-              case 1:
-                return "Class " + (row + 1);
-              case 2:
-                return item.assignedTeacher;
-            }
-          }),
-          clipColumn(1, "max-w-[30vw] pr-8"),
-        ]}
-      />
-    </>
-  );
-}
-
-function Students() {}
 
 function TabbedTable({
   results,
