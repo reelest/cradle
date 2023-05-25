@@ -36,11 +36,11 @@ import Printed from "@/components/Printed";
 import AppLogo from "@/components/AppLogo";
 import delay from "@/utils/delay";
 
-export default function FinancialsView() {
+export default function CommunicationsView() {
   const [active, setActive] = useState("courses");
   const [schoolType, setSchoolType] = useState("high school");
-  const classes = useClassesAPI(schoolType)?.classes;
-  const [currentClass, selectClass] = useArrayState(classes);
+  const tabs = ["Announcements", "Events"];
+  const [currentClass, selectClass] = useArrayState(tabs);
   const payments = usePaymentsAPI(currentClass)?.payments;
 
   const branches = useMemo(
@@ -52,7 +52,6 @@ export default function FinancialsView() {
         .filter(uniq),
     [payments]
   );
-  const [branch, setBranch] = useArrayState(branches);
 
   const [sort, setSort] = useState("latest");
   const filtered = useMemo(
@@ -75,9 +74,8 @@ export default function FinancialsView() {
       <div className="text-right w-full">
         <ProfilePic />
       </div>
-      <h1 className="font-36b">Financial</h1>
       <div class="flex border-b border-transparentGray py-8 mb-8 justify-end">
-        <SearchInput />
+        <h1 className="font-36b">Communication</h1>
         <Spacer />
         <select
           className="select-1"
@@ -88,11 +86,19 @@ export default function FinancialsView() {
           <option value="montessori">Montessori</option>
         </select>
       </div>
-      <div className="h-8" />
-      <TabbedTable
+      <div className="flex flex-wrap items-center justify-center mt-4 mb-8">
+        <SearchInput />
+        <ThemedButton variant="classic" className="flex items-center my-2">
+          <span>Create an announcement</span>
+          <PlusCircleIcon className="ml-3" width={20} />
+        </ThemedButton>
+      </div>
+
+      <div className="h-10" />
+      <TabbedList
         currentTab={currentClass}
         onSelectTab={selectClass}
-        tabHeaders={classes}
+        tabHeaders={tabs}
         printHeader={
           <>
             <AppLogo />
@@ -114,47 +120,40 @@ export default function FinancialsView() {
             </select>
           </>
         }
-        headers={["S/N", "Name", "Description", "Amount", "Date", "Time"]}
         results={filtered}
-        renderHooks={[
-          addClassToColumns("min-w-[240px]", [1]),
-          addClassToColumns("min-w-[120px]", [3]),
-          addClassToColumns("text-right", [4]),
-          supplyValue((row, col) =>
-            col === 0 ? (
-              row + 1
-            ) : col === 1 ? (
-              payments[row].name
-            ) : col === 2 ? (
-              <span className="inline-block align-bottom w-56 whitespace-nowrap overflow-hidden text-ellipsis">
-                {payments[row].desc}
-              </span>
-            ) : col === 3 ? (
-              "N" + formatNumber(payments[row].amount)
-            ) : col === 4 ? (
-              formatDate(payments[row].date)
-            ) : (
-              formatTime(payments[row].date).toLowerCase()
-            )
-          ),
-        ]}
+        renderItem={(item, i) => (
+          <div className="rounded-lg shadow-3 m-4 py-5 px-5">
+            <div className="flex justify-between">
+              <h6 className="font-24b">Upcoming Event - Cradle</h6>
+              <p>Posted on May 15, 2023</p>
+            </div>
+            <p>
+              Lorem ipsum dolor sit, amet consectetur adipisicing elit.
+              Repudiandae, in aliquam? Architecto mollitia officia illo vero
+              velit repellendus suscipit accusamus similique. Consequatur nihil
+              maxime temporibus praesentium ullam aut numquam mollitia?Lorem
+              ipsum dolor sit amet consectetur adipisicing elit. Neque ipsa iure
+              animi error laboriosam eaque distinctio possimus tempora hic ipsum
+              deleniti blanditiis, labore sequi culpa nemo iste reprehenderit
+              quae praesentium?
+            </p>
+          </div>
+        )}
       />
     </div>
   );
 }
 
-function TabbedTable({
+function TabbedList({
   results,
-  headers,
   tabHeaders,
   onSelectTab,
   currentTab,
   headerContent,
   printHeader,
-  renderHooks,
+  renderItem,
 }) {
-  const { data, ...controller } = usePager(results || [], 10);
-  const tableRef = useRef();
+  const { data, ...controller } = usePager(results || [], 3);
   const [selected, setSelected] = useState(-1);
   useEffect(() => setSelected(-1), [controller.page, results]);
   return (
@@ -179,49 +178,14 @@ function TabbedTable({
       ) : null}
       <div className="h-6" />
       <TableHeader>{headerContent}</TableHeader>
-      <div ref={tableRef}>
+      <div>
         <Printed className="hidden print:block py-10">{printHeader}</Printed>
-        <Table
-          loading={!results}
-          scrollable
-          cols={headers.length}
-          rows={Math.min(10, results?.length)}
-          headers={headers}
-          rowSpacing={1}
-          headerClass="text-disabled text-left"
-          rowClass={(row) =>
-            `${selected === row ? "bg-primaryLight text-white" : "bg-white"} ${
-              row >= data.length ? "invisible" : "shadow-3"
-            }`
-          }
-          onClickRow={(e, row) => setSelected(selected === row ? -1 : row)}
-          renderHooks={[
-            pageData(controller.page - 1, 10),
-            addHeaderClass("first:pl-4 pr-2 last:pr-0 font-20t"),
-            addClassToColumns(
-              "first:pl-4 pr-2 pt-1 pb-1 first:rounded-l last:rounded-r"
-            ),
-            ...renderHooks,
-          ]}
-        />
+        <ul>
+          {data?.map?.((e, i) => renderItem(e, 3 * (controller.page - 1)))}
+        </ul>
       </div>
       <div className="flex justify-end mt-28">
         <Pager controller={controller} />
-      </div>
-      <div className="flex justify-end mt-8">
-        <ThemedButton bg="bg-primary" variant="classic" className="mx-2">
-          Edit
-        </ThemedButton>
-        <ThemedButton bg="bg-secondary" variant="classic" className="mx-2">
-          Delete
-        </ThemedButton>
-        <ThemedButton
-          onClick={() => printElement(tableRef.current)}
-          variant="classic"
-          className="mx-2"
-        >
-          Print
-        </ThemedButton>
       </div>
     </Box>
   );

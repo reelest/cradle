@@ -13,6 +13,7 @@ import UsersView from "./users";
 import useScrollAnchor from "@/utils/useScrollAnchor";
 import AcademicsView from "./academic";
 import FinancialsView from "./financial";
+import CommunicationsView from "./communications";
 
 const ADMIN_TABS = [
   {
@@ -38,6 +39,7 @@ const ADMIN_TABS = [
   {
     name: "Communication",
     icon: hub,
+    component: CommunicationsView,
   },
 ];
 
