@@ -30,7 +30,7 @@ export default function Sidebar({
             (isOpen
               ? " transition-transform"
               : " transition-transform -translate-x-full")
-      } bg-primaryDark text-white w-80 h-full pt-12 pb-8"`}
+      } bg-primaryDark text-white w-80 flex-shrink-0 h-full pt-12 pb-8"`}
     >
       <nav className="flex flex-col justify-start h-full">
         <AppLogo className="block mx-auto relative right-2 mb-8 w-1/2 px-4" />
