@@ -2,22 +2,20 @@ import { useState } from "react";
 import { ProfilePic, SearchInput } from "../dashboard/TopRow";
 import ThemedButton from "@/components/ThemedButton";
 import PlusCircleIcon from "@heroicons/react/20/solid/PlusCircleIcon";
-import TrashIcon from "@heroicons/react/20/solid/TrashIcon";
-import Box from "@/components/Box";
-import Table, {
-  TableButton,
-  TableHeader,
+import {
   addClassToColumns,
-  addHeaderClass,
-  onClickHeader,
   supplyValue,
+  useColumnSelect,
 } from "@/components/Table";
-import { useAdministratorsAPI } from "@/logic/api";
-import LoaderAnimation from "@/components/LoaderAnimation";
+import {
+  useAdministratorsAPI,
+  useParentsAPI,
+  useStudentsAPI,
+  useTeachersAPI,
+} from "@/logic/api";
 import { formatDate } from "@/utils/formatNumber";
-import usePager from "@/utils/usePager";
-import Spacer from "@/components/Spacer";
-import Pager from "@/components/Pager";
+import useScrollAnchor from "@/utils/useScrollAnchor";
+import ThemedTable from "@/components/ThemedTable";
 
 const TABS = {
   administrators: {
@@ -37,11 +35,14 @@ const TABS = {
     component: Students,
   },
 };
+
 export default function UsersView() {
   const [active, setActive] = useState("administrators");
   const ActiveTab = TABS[active].component;
+  const scrollAnchor = useScrollAnchor(ActiveTab);
   return (
     <div className="pt-8 flex flex-col pr-12 pl-8">
+      {scrollAnchor}
       <div className="text-right w-full">
         <ProfilePic />
       </div>
@@ -50,7 +51,9 @@ export default function UsersView() {
         {Object.keys(TABS).map((e, i) => (
           <ThemedButton
             as="li"
-            variant={active === e ? "classic" : "classicWhite"}
+            variant="classic"
+            bg={active === e ? "bg-primaryLight" : "bg-white"}
+            color={active === e ? "text-white" : "text-black2"}
             onClick={() => setActive(e)}
             className="inline-block mx-4 shadow-1"
             key={e}
@@ -59,7 +62,7 @@ export default function UsersView() {
           </ThemedButton>
         ))}
       </ul>
-      <h3 className="font-32b">{TABS[active].name}</h3>
+      <h2 className="font-32b">{TABS[active].name}</h2>
       <ActiveTab />
       <div className="h-8" />
     </div>
@@ -68,8 +71,6 @@ export default function UsersView() {
 
 function Administrators() {
   const admins = useAdministratorsAPI()?.admins;
-  const { data, ...controller } = usePager(admins || [], 10);
-  const [selected, setSelected] = useState(-1);
   return (
     <>
       <div className="flex flex-wrap items-center justify-center mt-4 mb-8">
@@ -79,68 +80,218 @@ function Administrators() {
           <PlusCircleIcon className="ml-3" width={20} />
         </ThemedButton>
       </div>
-      <Box boxClass="px-8 py-6">
-        <TableHeader>
-          <span />
-          <TableButton>
-            Delete
-            <TrashIcon className="ml-0.5 relative top-1" width={20} />
-          </TableButton>
-        </TableHeader>
-        <Table
-          loading={!admins}
-          scrollable
-          cols={4}
-          rows={10}
-          headers={["Name", "Email", "Date Created", "Status"]}
-          rowSpacing={1}
-          headerClass="text-disabled text-left"
-          rowClass={(row) =>
-            `${selected === row ? "bg-primaryLight text-white" : "bg-white"} ${
-              row >= data.length ? "invisible" : "shadow-3"
-            }`
-          }
-          onClickRow={(e, row) => setSelected(selected === row ? -1 : row)}
-          renderHooks={[
-            addHeaderClass("first:pl-4 pr-2 last:pr-0 font-20t"),
-            addClassToColumns(
-              "first:pl-4 pr-2 pt-1 pb-1 first:rounded-l last:rounded-r"
-            ),
-            addClassToColumns("text-center", [3]),
-            addClassToColumns("min-w-[240px]", [0]),
-            supplyValue((row, col) => {
-              const item = data[row];
-              if (!item) return "--";
-              switch (col) {
-                case 0:
-                  return item.name;
-                case 1:
-                  return item.email;
-                case 2:
-                  return formatDate(item.dateCreated);
-                case 3:
-                  return (
-                    <span
-                      className={`inline-block w-4 h-4 rounded-full border align-middle border-transparentGray ${
-                        item.status ? "bg-green-500" : "bg-black2"
-                      }`}
-                    ></span>
-                  );
-              }
-            }),
-          ]}
-        />
-        <p className="flex items-center mt-28">
-          <Spacer />
-          <span className="font-32b mr-4">Total</span>
-          <span className="font-20t text-disabled">{admins?.length}</span>
-          <Spacer />
-          <Pager controller={controller} />
-        </p>
-      </Box>
+      <ThemedTable
+        headers={["Name", "Email", "Date Created", "Status"]}
+        results={admins}
+        renderHooks={[
+          addClassToColumns("text-center", [3]),
+          addClassToColumns("min-w-[240px]", [0]),
+          supplyValue((row, col) => {
+            const item = admins[row];
+            if (!item) return "--";
+            switch (col) {
+              case 0:
+                return item.name;
+              case 1:
+                return item.email;
+              case 2:
+                return formatDate(item.dateCreated);
+              case 3:
+                return (
+                  <span
+                    className={`inline-block w-4 h-4 rounded-full border align-middle border-transparentGray ${
+                      item.status ? "bg-green-500" : "bg-black2"
+                    }`}
+                  ></span>
+                );
+            }
+          }),
+        ]}
+      />
     </>
   );
 }
-function Teachers() {}
-function Parents() {}
-function Students() {}
+
+function Teachers() {
+  const teachers = useTeachersAPI("high school")?.teachers;
+  const montessoriTeachers = useTeachersAPI("montessori")?.teachers;
+  return (
+    <>
+      <div className="flex flex-wrap items-center justify-center mt-4 mb-8">
+        <SearchInput />
+        <ThemedButton variant="classic" className="flex items-center my-2">
+          <span>Add new teacher</span>
+          <PlusCircleIcon className="ml-3" width={20} />
+        </ThemedButton>
+      </div>
+      <ThemedTable
+        title="High School"
+        results={teachers}
+        headers={["Name", "Email", "Subject", "Status"]}
+        renderHooks={[
+          addClassToColumns("text-center", [3]),
+          addClassToColumns("min-w-[240px]", [0]),
+          supplyValue((row, col) => {
+            const item = teachers[row];
+            if (!item) return "--";
+            switch (col) {
+              case 0:
+                return item.name;
+              case 1:
+                return item.email;
+              case 2:
+                return item.subject;
+              case 3:
+                return item.class || "None";
+            }
+          }),
+        ]}
+      />
+      <ThemedTable
+        title="Montessori"
+        results={montessoriTeachers}
+        headers={["Name", "Email", "Subject", "Status"]}
+        renderHooks={[
+          addClassToColumns("text-center", [3]),
+          addClassToColumns("min-w-[240px]", [0]),
+          supplyValue((row, col) => {
+            const item = montessoriTeachers[row];
+            if (!item) return "--";
+            switch (col) {
+              case 0:
+                return item.name;
+              case 1:
+                return item.email;
+              case 2:
+                return item.subject;
+              case 3:
+                return item.class || "None";
+            }
+          }),
+        ]}
+      />
+    </>
+  );
+}
+
+function Parents() {
+  const parents = useParentsAPI()?.parents;
+  return (
+    <>
+      <div className="flex flex-wrap items-center justify-center mt-4 mb-8">
+        <SearchInput />
+        <ThemedButton variant="classic" className="flex items-center my-2">
+          <span>Add new parent</span>
+          <PlusCircleIcon className="ml-3" width={20} />
+        </ThemedButton>
+      </div>
+      <ThemedTable
+        headers={["Name", "Email", "Pupil Count", "Status"]}
+        results={parents}
+        renderHooks={[
+          addClassToColumns("text-center", [3]),
+          addClassToColumns("min-w-[240px]", [0]),
+          supplyValue((row, col) => {
+            const item = parents[row];
+            if (!item) return "--";
+            switch (col) {
+              case 0:
+                return item.name;
+              case 1:
+                return item.email;
+              case 2:
+                return item.numPupils;
+              case 3:
+                return (
+                  <span
+                    className={`inline-block w-4 h-4 rounded-full border align-middle border-transparentGray ${
+                      item.status ? "bg-green-500" : "bg-black2"
+                    }`}
+                  ></span>
+                );
+            }
+          }),
+        ]}
+      />
+    </>
+  );
+}
+function Students() {
+  const all_students = useStudentsAPI()?.students;
+  const [students, renderHook] = useColumnSelect(
+    all_students,
+    (e) => e.class,
+    2
+  );
+  return (
+    <>
+      <div className="flex flex-wrap items-center justify-center mt-4 mb-8">
+        <SearchInput />
+        <ThemedButton variant="classic" className="flex items-center my-2">
+          <span>Add new parent</span>
+          <PlusCircleIcon className="ml-3" width={20} />
+        </ThemedButton>
+      </div>
+      <ThemedTable
+        title="High School"
+        headers={["Name", "Email", null, "Status"]}
+        results={students}
+        renderHooks={[
+          renderHook,
+          addClassToColumns("text-center", [3]),
+          addClassToColumns("min-w-[240px]", [0]),
+          supplyValue((row, col) => {
+            const item = students[row];
+            if (!item) return "--";
+            switch (col) {
+              case 0:
+                return item.name;
+              case 1:
+                return item.email;
+              case 2:
+                return item.class;
+              case 3:
+                return (
+                  <span
+                    className={`inline-block w-4 h-4 rounded-full border align-middle border-transparentGray ${
+                      item.status ? "bg-green-500" : "bg-black2"
+                    }`}
+                  ></span>
+                );
+            }
+          }),
+        ]}
+      />
+      <ThemedTable
+        title="Montessori"
+        headers={["Name", "Email", null, "Status"]}
+        results={students}
+        renderHooks={[
+          renderHook,
+          addClassToColumns("text-center", [3]),
+          addClassToColumns("min-w-[240px]", [0]),
+          supplyValue((row, col) => {
+            const item = students[row];
+            if (!item) return "--";
+            switch (col) {
+              case 0:
+                return item.name;
+              case 1:
+                return item.email;
+              case 2:
+                return item.class;
+              case 3:
+                return (
+                  <span
+                    className={`inline-block w-4 h-4 rounded-full border align-middle border-transparentGray ${
+                      item.status ? "bg-green-500" : "bg-black2"
+                    }`}
+                  ></span>
+                );
+            }
+          }),
+        ]}
+      />
+    </>
+  );
+}

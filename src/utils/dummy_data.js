@@ -41,6 +41,15 @@ const fillProperty = (type, firstName, lastName, obj) => {
       return email(firstName, lastName).toLowerCase();
     case "date":
       return date();
+    case "subject":
+      return faker.helpers.arrayElement([
+        "Mathematics",
+        "Social Studies",
+        "English",
+        "Geography",
+      ]);
+    case "class":
+      return faker.helpers.arrayElement(["JSS 1", "JSS 2", "SSS 1"]);
     case "pastDate":
       return pastDate();
     case "image":
@@ -108,11 +117,11 @@ export default function useDummyData(api, seed = 100) {
 }
 
 //Every API either returns an object or undefined ie loading
-const ASYNC_SEED = Math.random() * 100;
 export const useAsyncDummyData = (API) => {
-  const data = useDummyData(API, ASYNC_SEED);
+  const seed = useMemo(() => Math.random() * 100, []);
+  const data = useDummyData(API, seed);
   return usePromise(async () => {
-    await delay(1000 + Math.random() * 5000);
+    await delay(Math.random() * 2000);
     return data;
   }, [data]);
 };

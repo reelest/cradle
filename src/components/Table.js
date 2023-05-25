@@ -3,6 +3,8 @@ import Template from "./Template";
 import ThemedButton from "./ThemedButton";
 import mergeProps from "@/utils/mergeProps";
 import LoaderAnimation from "./LoaderAnimation";
+import { useMemo, useRef, useState } from "react";
+import uniq from "@/utils/uniq";
 
 const borderSpacings = [
   "border-spacing-y-0",
@@ -13,7 +15,6 @@ const borderSpacings = [
   "border-spacing-y-5",
 ];
 const renderColumn = ({ data, row, col, classes, attrs, next }) => {
-  console.log(attrs);
   return row >= 0 ? (
     <td key={row + ";" + col} className={classes.join(" ")} {...attrs}>
       {Array.isArray(data) ? data[row][col] : data}
@@ -52,6 +53,7 @@ export default function Table({
   data,
   rows = Array.isArray(data) ? data.length : 0,
   cols = Array.isArray(data?.[0]) ? data[0].length : 0,
+  tableRef,
   loading = false,
   headers,
   scrollable,
@@ -64,6 +66,7 @@ export default function Table({
 }) {
   const table = (
     <table
+      ref={tableRef}
       className={`w-full leading border-separate ${borderSpacings[rowSpacing]}`}
     >
       <thead className={headerClass}>
@@ -75,9 +78,11 @@ export default function Table({
       </thead>
       <tbody className={bodyClass}>
         {loading ? (
-          <td colspan={100} className="w-full py-3">
-            <LoaderAnimation small />
-          </td>
+          <tr>
+            <td colSpan={100} className="w-full py-3">
+              <LoaderAnimation small />
+            </td>
+          </tr>
         ) : (
           range(rows).map((row) => (
             <tr
@@ -108,12 +113,13 @@ export const TableButton = (props) => (
   <Template
     props={props}
     as={ThemedButton}
-    variant="redText"
+    variant="text"
+    color="text-secondary"
     className="flex items-baseline"
   />
 );
 
-/**Default Hooks */
+/**Render Hooks */
 export const addHeaderClass =
   (className) =>
   ({ row, classes, next }) =>
@@ -142,3 +148,65 @@ export const supplyValue =
   (getValue) =>
   ({ row, col, next }) =>
     row >= 0 ? next({ data: getValue(row, col) }) : next();
+
+export const pageData =
+  (currentPage, pageSize) =>
+  ({ row, next }) =>
+    row >= 0 ? next({ row: row + currentPage * pageSize }) : next();
+export const clipColumn =
+  (column, widthClass = "w-56") =>
+  ({ data, col, row, next }) =>
+    row >= 0 && column === col
+      ? next({
+          data: (
+            <span
+              className={`inline-block align-bottom ${widthClass} whitespace-nowrap overflow-hidden text-ellipsis`}
+            >
+              {data}
+            </span>
+          ),
+        })
+      : next();
+export const useColumnSelect = (
+  data,
+  select,
+  column,
+  emptyText = "No filter"
+) => {
+  const [active, setActive] = useState("all");
+  select = useRef(select).current;
+  const cols = useMemo(
+    () => (data ? data.map(select).sort().filter(uniq) : []),
+    [data, select]
+  );
+  const filtered = useMemo(
+    () =>
+      !data || active === "all"
+        ? data
+        : data.filter((e) => select(e) === cols[active]),
+    [data, select, cols, active]
+  );
+  return [
+    filtered,
+    ({ row, col, next }) =>
+      row < 0 && col === column
+        ? next({
+            data: (
+              <select
+                onChange={(e) => {
+                  setActive(e.target.value ? Number(e.target.value) : "all");
+                }}
+                className="select-1"
+              >
+                {cols.map((e, i) => (
+                  <option key={e} value={i}>
+                    {e}
+                  </option>
+                ))}
+                <option value="">{emptyText}</option>
+              </select>
+            ),
+          })
+        : next(),
+  ];
+};

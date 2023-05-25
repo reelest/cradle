@@ -12,7 +12,6 @@ const DASHBOARD_URL = {
 };
 export default function UserRedirect({ noAuth, auth, children }) {
   const user = useUser();
-  console.log({ user });
   const router = useRouter();
   if (user === undefined) {
     return <FullscreenLoader />;

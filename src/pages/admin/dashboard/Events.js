@@ -13,6 +13,7 @@ import {
 } from "@/components/Table";
 import { range } from "d3";
 import { formatTime } from "@/utils/formatNumber";
+import LoaderAnimation from "@/components/LoaderAnimation";
 
 const months = [
   "january",
@@ -48,15 +49,19 @@ function Events({ date = new Date() }) {
       </Row>
       <WeekView showHeader date={date} />
       <ul>
-        {events?.map?.(({ date, title, scope }, i) => (
-          <EventView
-            key={i}
-            date={date}
-            title={title}
-            scope={scope}
-            isSelected={i == 0}
-          />
-        ))}
+        {events ? (
+          events.map(({ date, title, scope }, i) => (
+            <EventView
+              key={i}
+              date={date}
+              title={title}
+              scope={scope}
+              isSelected={i == 0}
+            />
+          ))
+        ) : (
+          <LoaderAnimation small light />
+        )}
       </ul>
     </Box>
   );

@@ -2,24 +2,24 @@ import { None } from "@/utils/none";
 import Template from "./Template";
 
 const variants = {
+  text: "font-20 active:text-primary hover:text-primaryLight ",
   large:
-    "px-10 py-5 bg-primary rounded-2xl font-24b active:bg-primaryDark disabled:bg-lightGray hover:outline outline-accent1 text-white",
-  text: "font-20 text-placeholder hover:text-primaryLight active:text-primary",
-  redText:
-    "font-20 text-secondary py-2 hover:text-primaryLight active:text-primary",
+    "px-10 py-5 rounded-2xl font-24b active:bg-primaryDark disabled:bg-lightGray hover:outline outline-accent1",
   classic:
-    "px-6 py-2 bg-primaryLight rounded-2xl font-24 active:bg-primary disabled:opacity-50 hover:outline outline-accent1 text-white",
-
-  classicWhite:
-    "px-6 py-2 bg-white rounded-2xl font-24 active:bg-primary disabled:opacity-50 hover:outline outline-accent1 text-black2",
-
+    "px-6 py-2 rounded-2xl font-20 active:bg-primary disabled:opacity-50 hover:outline outline-accent1",
   small:
-    "px-6 py-1 bg-primaryLight rounded-lg font-24b active:bg-primary disabled:opacity-50 hover:outline outline-accent1 text-white",
+    "px-6 py-1 rounded-lg font-24b active:bg-primary disabled:opacity-50 hover:outline outline-accent1",
 };
 
 const mergeableEvents = ["onClick"];
 export default function ThemedButton({
-  variant = "large",
+  variant,
+  bg = variant === "large"
+    ? "bg-primary"
+    : variant === "text"
+    ? "bg-transparent"
+    : "bg-primaryLight",
+  color = variant === "text" ? "text-placeholder" : "text-white",
   caret = false,
   children,
   value,
@@ -29,7 +29,7 @@ export default function ThemedButton({
   return (
     <Template
       as="button"
-      className={variants[variant]}
+      className={variants[variant] + " " + bg + " " + color}
       mergeableEvents={mergeableEvents}
       value={caret && !children && value ? value + "\xa0\xa0>" : value}
       {...(noSubmit ? { onClick: preventDefault } : None)}

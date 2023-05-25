@@ -1,6 +1,7 @@
 import Template from "./Template";
 
-export default function LoaderAnimation({ small, ...props }) {
+export default function LoaderAnimation({ small, light, ...props }) {
+  const bg = light ? "fill-primaryLight" : "fill-primary";
   return (
     <Template
       as="svg"
@@ -9,7 +10,7 @@ export default function LoaderAnimation({ small, ...props }) {
       xmlns="http://www.w3.org/2000/svg"
       props={props}
     >
-      <rect rx="4" className="fill-primary" x="0" width="10" height="40">
+      <rect rx="4" className={bg} x="0" width="10" height="40">
         <animate
           attributeName="y"
           values="0;30;0"
@@ -26,7 +27,7 @@ export default function LoaderAnimation({ small, ...props }) {
           repeatCount="indefinite"
         />
       </rect>
-      <rect rx="4" className="fill-primary" x="20" width="10" height="40">
+      <rect rx="4" className={bg} x="20" width="10" height="40">
         <animate
           attributeName="y"
           values="0;30;0"
@@ -37,7 +38,7 @@ export default function LoaderAnimation({ small, ...props }) {
       </rect>
       <rect
         rx="50"
-        className="fill-primary"
+        className={bg}
         width="100"
         height="10"
         x="-35"

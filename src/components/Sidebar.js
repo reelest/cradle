@@ -67,7 +67,7 @@ const TabLink = ({ icon, children, isSelected, isActivated, ...props }) => {
       as={Link}
       {...{ props }}
       className={`block text-left  rounded-xl ${
-        isSelected ? "bg-accent1" : isActivated ? "" : "text-disabled"
+        isSelected ? "bg-accent1" : isActivated ? "" : "text-white"
       } py-2 px-6 my-1.5 w-full`}
     >
       <Image
@@ -77,7 +77,7 @@ const TabLink = ({ icon, children, isSelected, isActivated, ...props }) => {
         width={16}
         style={{
           filter:
-            isSelected || isActivated
+            isSelected || isActivated || true
               ? "invert(100%)"
               : "invert(43%) sepia(9%) saturate(7%) hue-rotate(0deg) brightness(92%) contrast(84%)",
         }}

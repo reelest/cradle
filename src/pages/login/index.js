@@ -103,7 +103,7 @@ function LoginForm({ setShowForgotPassword }) {
         className="my-8"
         placeholder="Password"
       />
-      <ThemedButton disabled={!enabled} className="my-8" caret>
+      <ThemedButton variant="large" disabled={!enabled} className="my-8" caret>
         Log in now
       </ThemedButton>
       <TextButton
@@ -158,7 +158,7 @@ const PasswordModal = ({ open, onClose }) => {
             placeholder="Email"
             type="email"
           ></TextInput>
-          <ThemedButton className="mt-6 mb-16" caret>
+          <ThemedButton variant="large" className="mt-6 mb-16" caret>
             Send
           </ThemedButton>
         </Dialog.Panel>

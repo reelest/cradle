@@ -37,6 +37,7 @@ export default function BottomRow() {
           <select
             className="select-1"
             onChange={(e) => setSort(e.target.value)}
+            value={sort}
           >
             <option value="latest">Latest Payments</option>
             <option value="name">Alphabetical Order</option>

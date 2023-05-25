@@ -10,6 +10,8 @@ import DashboardLayout from "@/components/DashboardLayout";
 import { useRouter } from "next/router";
 import MainView from "./dashboard";
 import UsersView from "./users";
+import useScrollAnchor from "@/utils/useScrollAnchor";
+import AcademicsView from "./academic";
 
 const ADMIN_TABS = [
   {
@@ -25,6 +27,7 @@ const ADMIN_TABS = [
   {
     name: "Academic",
     icon: school,
+    component: AcademicsView,
   },
   {
     name: "Financial",
@@ -43,6 +46,8 @@ export default function Admin() {
     ADMIN_TABS.filter(
       ({ name, id = encodeURIComponent(name.toLowerCase()) }) => id === tab
     )[0]?.component || MainView;
+
+  const scrollAnchor = useScrollAnchor(ActiveView);
   return (
     <>
       <Head>
@@ -52,6 +57,7 @@ export default function Admin() {
       </Head>
       <DashboardLayout tabs={ADMIN_TABS}>
         <UserRedirect auth>
+          {scrollAnchor}
           <ActiveView />
         </UserRedirect>
       </DashboardLayout>
