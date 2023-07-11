@@ -1,28 +1,32 @@
 import { useUser } from "@/logic/api";
 import { useRouter } from "next/router";
+import isServerSide from "@/utils/is_server_side";
 import FullscreenLoader from "./FullscreenLoader";
 
-const UNAUTHENTICATED_URLS = ["/login", "/"];
-
 const DASHBOARD_URL = {
-  admin: "/admin",
+  administrator: "/admin",
   student: "/student",
   parent: "/parent",
   teacher: "/teacher",
 };
-export default function UserRedirect({ noAuth, auth, children }) {
+
+export default function UserRedirect({
+  redirectOnUser,
+  redirectOnNoUser,
+  children,
+}) {
   const user = useUser();
   const router = useRouter();
   if (user === undefined) {
     return <FullscreenLoader />;
   } else if (user === null) {
-    if (auth) {
-      router.replace("/login");
-      return;
+    if (redirectOnNoUser) {
+      if (!isServerSide) router.replace("/login");
+      return null;
     }
-  } else if (noAuth) {
-    router.replace(DASHBOARD_URL[user.role]);
-    return;
+  } else if (redirectOnUser) {
+    if (!isServerSide) router.replace(DASHBOARD_URL[user.role]);
+    return null;
   }
   return children;
 }

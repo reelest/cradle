@@ -77,9 +77,10 @@ const TabLink = ({ icon, children, isSelected, isActivated, ...props }) => {
         width={16}
         style={{
           filter:
-            isSelected || isActivated || true
-              ? "invert(100%)"
-              : "invert(43%) sepia(9%) saturate(7%) hue-rotate(0deg) brightness(92%) contrast(84%)",
+            // isSelected || isActivated || true
+            // ?
+            "invert(100%)",
+          // : "invert(43%) sepia(9%) saturate(7%) hue-rotate(0deg) brightness(92%) contrast(84%)",
         }}
       />
       {children}

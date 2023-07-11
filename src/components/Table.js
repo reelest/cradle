@@ -14,7 +14,7 @@ const borderSpacings = [
   "border-spacing-y-4",
   "border-spacing-y-5",
 ];
-const renderColumn = ({ data, row, col, classes, attrs, next }) => {
+const renderColumn = ({ data, row, col, classes, attrs }) => {
   return row >= 0 ? (
     <td key={row + ";" + col} className={classes.join(" ")} {...attrs}>
       {Array.isArray(data) ? data[row][col] : data}
@@ -62,12 +62,15 @@ export default function Table({
   rowClass = "",
   rowSpacing = 0,
   onClickRow,
+  className = "w-full leading",
   renderHooks = [],
 }) {
   const table = (
     <table
       ref={tableRef}
-      className={`w-full leading border-separate ${borderSpacings[rowSpacing]}`}
+      className={`${className} ${rowSpacing > 0 ? "border-separate" : ""} ${
+        borderSpacings[rowSpacing]
+      }`}
     >
       <thead className={headerClass}>
         <tr>
@@ -144,6 +147,12 @@ export const onClickHeader =
           ]),
         })
       : next();
+
+/**
+ *
+ * @param {(row:number, col:number)=>any} getValue
+ * @returns
+ */
 export const supplyValue =
   (getValue) =>
   ({ row, col, next }) =>
@@ -152,7 +161,7 @@ export const supplyValue =
 export const pageData =
   (currentPage, pageSize) =>
   ({ row, next }) =>
-    row >= 0 ? next({ row: row + currentPage * pageSize }) : next();
+    row >= 0 ? next({ row: row + (currentPage - 1) * pageSize }) : next();
 export const clipColumn =
   (column, widthClass = "w-56") =>
   ({ data, col, row, next }) =>

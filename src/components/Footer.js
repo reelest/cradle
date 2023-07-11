@@ -6,7 +6,7 @@ import facebookIcon from "@/assets/facebook.svg";
 import twitterIcon from "@/assets/twitter.svg";
 import Image from "next/image";
 
-export default function Footer({ cradleHighDescription }) {
+export default function Footer() {
   return (
     <div className="bg-primaryDark text-white px-8 sm:px-10 md:px-20">
       <div className="container flex mx-auto py-24 flex-wrap max-lg:flex-col">

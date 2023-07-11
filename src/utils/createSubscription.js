@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import { noop } from "./none";
 
 /**
  * Allows multiple components to share a data source. The data source is setup when the first component is created and closed when the last component is destroyed.
@@ -12,10 +13,11 @@ export default function createSubscription(onSubscribe) {
   const subscribe = function (onNewData) {
     subscribers.push(onNewData);
     if (subscribers.length === 1) {
-      onUnsubscribe = onSubscribe(dispatch);
+      const result = onSubscribe(dispatch);
+      if (typeof result === "function") onUnsubscribe = result;
     }
     if (currentData !== undefined) onNewData(currentData);
-    return unsubscribe;
+    return () => unsubscribe(onNewData);
   };
   const unsubscribe = function (setData) {
     const index = subscribers.indexOf(setData);
@@ -27,12 +29,13 @@ export default function createSubscription(onSubscribe) {
     }
   };
   const dispatch = function (data) {
+    if (currentData === data) return;
     currentData = data;
     /**Update parents first in case of child assumptions */
     subscribers.forEach((e) => e(data));
   };
   return [
-    function useSubscription() {
+    function useData() {
       const [data, setData] = useState(currentData);
       useEffect(function () {
         return subscribe(setData);
@@ -42,4 +45,9 @@ export default function createSubscription(onSubscribe) {
     subscribe,
     dispatch,
   ];
+}
+export function useSubscription() {
+  const ref = useRef();
+  if (!ref.current) ref.current = createSubscription(noop);
+  return ref.current;
 }

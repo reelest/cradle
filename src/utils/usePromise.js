@@ -3,16 +3,18 @@ import { useState, useEffect, useRef } from "react";
 export default function usePromise(createPromise, deps) {
   const [, setData] = useState({});
   const ref = useRef({});
-  useMemo(
+  const cb = useMemo(
     function () {
       ref.current = undefined;
+      return createPromise;
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [...deps]
   );
   useEffect(
     function () {
       let stale = false;
-      const promise = createPromise();
+      const promise = cb();
       promise.then(function (data) {
         if (!stale) {
           ref.current = data;
@@ -23,7 +25,7 @@ export default function usePromise(createPromise, deps) {
         stale = true;
       };
     },
-    [...deps]
+    [cb]
   );
   return ref.current;
 }

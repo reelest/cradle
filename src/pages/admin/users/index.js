@@ -1,6 +1,7 @@
 import { useState } from "react";
-import { ProfilePic, SearchInput } from "../dashboard/TopRow";
+import { SearchInput } from "@/components/SearchInput";
 import ThemedButton from "@/components/ThemedButton";
+import { ProfilePic } from "@/components//ProfilePic";
 import PlusCircleIcon from "@heroicons/react/20/solid/PlusCircleIcon";
 import {
   addClassToColumns,
@@ -16,6 +17,8 @@ import {
 import { formatDate } from "@/utils/formatNumber";
 import useScrollAnchor from "@/utils/useScrollAnchor";
 import ThemedTable from "@/components/ThemedTable";
+import AddAdminModal from "@/parts/admin_users/AddAdminModal";
+import useModal from "@/utils/useModal";
 
 const TABS = {
   administrators: {
@@ -48,7 +51,7 @@ export default function UsersView() {
       </div>
       <h1 className="font-36b">Users</h1>
       <ul className="border-b border-transparentGray py-8 mb-8">
-        {Object.keys(TABS).map((e, i) => (
+        {Object.keys(TABS).map((e) => (
           <ThemedButton
             as="li"
             variant="classic"
@@ -71,11 +74,17 @@ export default function UsersView() {
 
 function Administrators() {
   const admins = useAdministratorsAPI()?.admins;
+  const [toggle, modal] = useModal(<AddAdminModal />);
+
   return (
     <>
       <div className="flex flex-wrap items-center justify-center mt-4 mb-8">
         <SearchInput />
-        <ThemedButton variant="classic" className="flex items-center my-2">
+        <ThemedButton
+          variant="classic"
+          className="flex items-center my-2"
+          onClick={toggle}
+        >
           <span>Add new administrator</span>
           <PlusCircleIcon className="ml-3" width={20} />
         </ThemedButton>
@@ -108,6 +117,7 @@ function Administrators() {
           }),
         ]}
       />
+      {modal}
     </>
   );
 }

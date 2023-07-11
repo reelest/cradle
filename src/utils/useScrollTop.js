@@ -20,6 +20,7 @@ export default function useScrollTop(ref, initial, _reducer) {
   };
   useEffect(() => {
     if (ref && ref.current) onChangeScroll({ target: ref.current });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   useListener(ref || windowRef, "scroll", onChangeScroll);
 

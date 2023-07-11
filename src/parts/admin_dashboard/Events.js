@@ -4,7 +4,6 @@ import sentenceCase from "@/utils/sentenceCase";
 import Box from "@/components/Box";
 import Row from "@/components/Row";
 import {
-  TableHeader,
   default as Table,
   supplyHeader,
   addHeaderClass,
@@ -14,6 +13,7 @@ import {
 import { range } from "d3";
 import { formatTime } from "@/utils/formatNumber";
 import LoaderAnimation from "@/components/LoaderAnimation";
+import { daysToMs } from "@/utils/time_utils";
 
 const months = [
   "january",
@@ -32,12 +32,14 @@ const months = [
 const days = ["sun", "mon", "tue", "wed", "thur", "fri", "sat"];
 function Events({ date = new Date() }) {
   const events = useAdminDashboardAPI()?.events;
+  const startOfDay = new Date(date.getTime());
+  startOfDay.setHours(0, 0, 0, 0);
   const currentMonth = sentenceCase(months[date.getMonth()]);
   const currentYear = date.getFullYear();
   return (
     <Box
-      className="text-white w-96 mx-8 flex-grow-0"
-      boxClass="h-full px-6 py-4 2xl:py-6 bg-primaryDark"
+      className="text-white w-96 mx-8 flex-grow-0 my-8"
+      boxClass="h-full px-6 py-4 2xl:py-6 bg-primaryDark max-h-96 overflow-y-auto"
       bg="primaryDark"
     >
       <h2 className="font-32b">Events</h2>
@@ -47,18 +49,22 @@ function Events({ date = new Date() }) {
           {currentMonth} {currentYear}
         </h4>
       </Row>
-      <WeekView showHeader date={date} />
+      <WeekView date={date} />
       <ul>
         {events ? (
-          events.map(({ date, title, scope }, i) => (
-            <EventView
-              key={i}
-              date={date}
-              title={title}
-              scope={scope}
-              isSelected={i == 0}
-            />
-          ))
+          events
+            .filter((e) => e.date >= startOfDay)
+            .filter((e) => e.date <= startOfDay.getTime() + daysToMs(100))
+            .sort((a, b) => a.date - b.date)
+            .map(({ date, title, scope }, i) => (
+              <EventView
+                key={i}
+                date={date}
+                title={title}
+                scope={scope}
+                isSelected={i == 0}
+              />
+            ))
         ) : (
           <LoaderAnimation small light />
         )}
@@ -71,19 +77,17 @@ function Events({ date = new Date() }) {
  * @param {Boolean} props.showHeader
  * @param {Object} props
  */
-const WeekView = ({ dat, showHeader }) => {
-  const date = new Date();
+const WeekView = ({ date }) => {
   const day = date.getDay();
   const firstDay = date.getDate() - day;
   return (
     <Table
       cols={7}
-      className="w-full"
       rows={1}
       headerClass=""
       renderHooks={[
         supplyHeader((col) => sentenceCase(days[col])),
-        addHeaderClass("w-1/7 text-center text-disabled font-16"),
+        addHeaderClass("w-24 text-center text-disabled font-16"),
         addClassToColumns("text-center", range(7)),
         supplyValue((row, col) => (
           <span

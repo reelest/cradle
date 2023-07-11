@@ -1,9 +1,8 @@
-import { useMemo, useRef } from "react";
+import { useMemo } from "react";
 import { faker } from "@faker-js/faker/locale/en_NG";
 import usePromise from "@/utils/usePromise";
-import { useDeepCompareEffect } from "react-use";
-import useDeepMemo, { useJSONMemo } from "./useDeepMemo";
 import delay from "./delay";
+import sentenceCase from "./sentenceCase";
 
 export const pick =
   (...args) =>
@@ -32,9 +31,9 @@ const fillProperty = (type, firstName, lastName, obj) => {
     case "name":
       return `${firstName} ${lastName}`;
     case "firstName":
-      return firstName;
+      return firstName.split("-").map(sentenceCase).join("-");
     case "lastName":
-      return lastName;
+      return lastName.split("-").map(sentenceCase).join("-");
     case "phoneNumber":
       return faker.phone.number("+234##########");
     case "email":

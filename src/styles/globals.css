@@ -1,4 +1,5 @@
 @import "./text_styles.css";
+@import "./scrollbars.css";
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -13,15 +14,15 @@ body {
     font-size: 12.8px;
   }
 }
+@layer components {
+  .card {
+    @apply bg-white shadow-2xl mx-auto px-16 max-sm:p-10 pt-16 pb-12 rounded-3xl;
+  }
 
-.card {
-  @apply bg-white shadow-2xl mx-auto px-20 max-sm:p-10 pt-16 pb-12 rounded-3xl;
+  .select-1 {
+    @apply outline-none border-transparentGray border py-0 px-2 leading-none h-8 rounded text-disabled;
+  }
 }
-
-.select-1 {
-  @apply outline-none border-transparentGray border py-0 px-2 leading-none h-8 rounded text-disabled;
-}
-
 .social-bar {
   background: rgba(205, 205, 205, 0.5);
   backdrop-filter: blur(2px);

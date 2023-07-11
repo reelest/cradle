@@ -24,6 +24,14 @@ const PieChart = ({ percent }) => {
           "stroke-dasharray",
           `${_percent * circumference} ${(1 - _percent) * circumference}`
         );
+      svg
+        .append("circle")
+        .attr("r", R - 0.5) //half of the radius so stroke-widht removes hole in center
+        .attr("cx", R)
+        .attr("cy", R)
+        .attr("fill", "transparent")
+        .attr("class", "stroke-primaryLight opacity-20")
+        .attr("stroke-width", 1); //equal to radius
     },
     [percent]
   );

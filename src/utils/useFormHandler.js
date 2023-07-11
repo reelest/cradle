@@ -2,32 +2,53 @@ import { useMemo, useState } from "react";
 
 export default function useFormHandler(defaults = {}, cb) {
   const [data, setData] = useState(defaults);
-  return useMemo(() => new FormHandler(data, setData, cb), [data, cb]);
+  const [error, setError] = useState(null);
+  return useMemo(
+    () => new FormHandler(data, setData, cb, error, setError),
+    [data, cb, error]
+  );
 }
 
 class FormHandler {
-  constructor(data, setData, cb) {
+  constructor(data, setData, cb, error, setError) {
     this.data = data;
     this.setData = setData;
+    this.error = error;
+    this.setError = setError;
     this.cb = cb;
   }
   _update(data = {}) {
     this.data = { ...this.data, ...data };
     this.setData(this.data);
   }
+  set(key, value) {
+    this.data[key] = value;
+    this._update();
+  }
+  submit(id) {
+    return {
+      id,
+      name: id,
+      type: "submit",
+      onClick: async () => {
+        id ?? this.set(id, true);
+      },
+    };
+  }
+
   textInput(id, type) {
     return {
       id,
       name: id,
       type,
       onChange: (e) => {
-        this.data[id] = e.target.value;
+        this.set(id, e.target.value);
         this._update();
       },
       value: this.data[id] || "",
     };
   }
-  radio(id) {
+  radio(...args) {
     return this.textInput(...args, "radio");
   }
   checkbox(id) {
@@ -36,8 +57,7 @@ class FormHandler {
       name: id,
       type: "checkbox",
       onChange: (e) => {
-        this.data[id] = e.target.checked;
-        this._update();
+        this.set(id, e.target.checked);
       },
       value: this.data[id] || false,
     };
@@ -46,21 +66,14 @@ class FormHandler {
     return {
       id,
       name: id,
-      onSubmit: (e) => {
-        e.preventDefault();
-        this.cb(new FormData(e.target), e.target);
+      onSubmit: async (e) => {
+        try {
+          await this.cb(this.data, e);
+        } catch (e) {
+          console.warn("Form error: ", e);
+          this.setError(e);
+        }
         return false;
-      },
-    };
-  }
-  submit(id) {
-    return {
-      id,
-      name: id,
-      type: "submit",
-      onClick: (e) => {
-        this.data[id] = true;
-        this._update();
       },
     };
   }

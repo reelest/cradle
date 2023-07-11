@@ -3,9 +3,9 @@ import PieChart from "@/components/PieChart";
 import EllipsisVerticalIcon from "@heroicons/react/20/solid/EllipsisVerticalIcon";
 import Image from "next/image";
 
-import students from "../assets/students_32.svg";
-import parents from "../assets/parents_32.svg";
-import teachers from "../assets/teachers_32.svg";
+import students from "./assets/students_32.svg";
+import parents from "./assets/parents_32.svg";
+import teachers from "./assets/teachers_32.svg";
 
 import { formatNumber } from "@/utils/formatNumber";
 import { useAdminDashboardAPI } from "@/logic/api";
@@ -13,8 +13,8 @@ import Row from "@/components/Row";
 const FirstRow = () => {
   const data = useAdminDashboardAPI();
   return (
-    <Row className="justify-center my-8">
-      <Box className="flex-grow" boxClass="px-6 py-4 2xl:py-6">
+    <Row className="justify-center">
+      <Box className="flex-grow my-8" boxClass="px-6 py-4 2xl:py-6">
         <div className="flex justify-between align-baseline">
           <h2 className="font-36b">Overview</h2>
           <select disabled={!data} className="select-1">
@@ -47,7 +47,7 @@ const FirstRow = () => {
         </div>
       </Box>
       <Box
-        className="w-56 mx-8"
+        className="w-56 mx-8 my-8"
         boxClass="flex flex-col py-4 px-6 items-center justify-between h-full"
       >
         <h6 className="font-20b text-center">Incomplete Teacher Profiles</h6>
@@ -63,7 +63,7 @@ const FirstRow = () => {
 };
 const NumberCell = ({ img, number, label, color }) => {
   return (
-    <div className="basis-44 shadow-2 rounded-xl p-3 my-4 mx-2">
+    <div className="basis-44 shadow-2 rounded-xl p-3 my-8 mx-2 sm:mx-3">
       <EllipsisVerticalIcon width={24} className="ml-auto block" />
       <div className="flex justify-center px-2 pt-1 pb-2">
         <Image

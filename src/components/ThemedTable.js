@@ -39,7 +39,7 @@ function ThemedTable({ results, headers, title, renderHooks = [] }) {
         }
         onClickRow={(e, row) => setSelected(selected === row ? -1 : row)}
         renderHooks={[
-          pageData(controller.page - 1, 10),
+          pageData(controller.page, 10),
           addHeaderClass("first:pl-4 pr-2 last:pr-0 font-20t"),
           addClassToColumns(
             "first:pl-4 pr-2 pt-1 pb-1 first:rounded-l last:rounded-r"
@@ -47,13 +47,13 @@ function ThemedTable({ results, headers, title, renderHooks = [] }) {
           ...renderHooks,
         ]}
       />
-      <p className="flex items-center mt-28">
+      <div className="flex items-center mt-28">
         <Spacer />
         <span className="font-32b mr-4">Total</span>
         <span className="font-20t text-disabled">{results?.length}</span>
         <Spacer />
         <Pager controller={controller} />
-      </p>
+      </div>
     </Box>
   );
 }

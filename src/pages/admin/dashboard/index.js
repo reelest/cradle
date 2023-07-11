@@ -1,7 +1,7 @@
-import BottomRow from "./BottomRow";
-import FirstRow from "./FirstRow";
-import MiddleRow from "./MiddleRow";
-import TopRow from "./TopRow";
+import BottomRow from "@/parts/admin_dashboard/BottomRow";
+import FirstRow from "@/parts/admin_dashboard/FirstRow";
+import MiddleRow from "@/parts/admin_dashboard/MiddleRow";
+import TopRow from "@/parts/admin_dashboard/TopRow";
 
 const MainView = () => {
   return (

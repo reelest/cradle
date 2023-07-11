@@ -12,13 +12,26 @@ import Footer from "@/components/Footer";
 import Header from "@/components/Header";
 import { useState } from "react";
 import { Dialog } from "@headlessui/react";
-import useFormHandler from "@/utils/useFormHandler";
-import { useMedia } from "react-use";
 
-import { forgotPasswordAPIUrl, doLogin, errorToUserString } from "@/logic/api";
+import {
+  forgotPasswordAPIUrl,
+  doLogin,
+  errorToUserString,
+  useUser,
+} from "@/logic/api";
 import UserRedirect from "@/components/UserRedirect";
 import Template from "@/components/Template";
 import useBreakpoints from "@/utils/useBreakpoints";
+import Form, {
+  FormCSRF,
+  FormErrors,
+  FormField,
+  FormSubmit,
+  REQUIRED_EMAIL,
+  REQUIRED_PASSWORD,
+} from "@/components/Form";
+import useFormHandler from "@/utils/useFormHandler";
+import LoaderAnimation from "@/components/LoaderAnimation";
 
 export default function LoginPage() {
   const [forgotPasswordModalShown, setShowForgotPassword] = useState(false);
@@ -33,25 +46,27 @@ export default function LoginPage() {
       <main className={"lg:px-16 md:px-8" + styles.main}>
         {/* The background image with padding*/}
         <div
-          className="container bg-cover bg-center bg-no-repeat pt-12 px-6 md:px-20 mx-auto md:mt-8 lg:mt-16 sm:rounded-t-[3em]"
+          className="bg-cover bg-center bg-no-repeat pt-12 px-6 md:px-20 mx-0 sm:mx-12 w-auto md:mt-8 lg:mt-16 sm:rounded-t-[3em]"
           style={{ backgroundImage: url(loginBackground.src) }}
         >
-          <nav className="flex text-white items-center w-full">
-            <AppLogo />
-            <Spacer />
-            <Links />
-          </nav>
-          <h1 className="font-64b text-white text-center mt-20 mb-10">
-            Log In
-          </h1>
-          <p className="max-sm:hidden font-36 text-white text-center mb-10">
-            Enter your login details to gain access to your portal
-          </p>
-          <div className="h-36 sm:h-72" />
+          <div className="container">
+            <nav className="flex text-white items-center w-full">
+              <AppLogo />
+              <Spacer />
+              <Links />
+            </nav>
+            <h1 className="font-64b text-white text-center mt-20 mb-10">
+              Log In
+            </h1>
+            <p className="max-sm:hidden font-36 text-white text-center mb-10">
+              Enter your login details to gain access to your portal
+            </p>
+            <div className="h-60 sm:h-96" />
+          </div>
         </div>
-        <Waves className="container mx-auto -top-36 w-full h-36" />
+        <Waves className="mx-0 sm:mx-12 w-auto -top-48 h-48" />
 
-        <div className=" relative -top-48 sm:top-[-26rem] sm:-mb-40">
+        <div className=" relative -top-72 sm:top-[-34rem] sm:-mb-40">
           <p className="container px-8 sm:hidden font-36 text-center mb-10">
             Enter your login details to gain access to your portal
           </p>
@@ -70,42 +85,38 @@ export default function LoginPage() {
 }
 
 function LoginForm({ setShowForgotPassword }) {
-  const [enabled, setEnabled] = useState(true);
-  const [error, setError] = useState();
   const sm = useBreakpoints().sm;
-  const form = useFormHandler({}, async (form) => {
-    try {
-      setEnabled(false);
-      await doLogin(form);
-      setError(false);
-    } catch (e) {
-      setEnabled(true);
-      setError(errorToUserString(e.cause ?? e));
-    }
-  });
-
+  const user = useUser();
   return (
-    <form
-      method="post"
-      {...form.form()}
+    <Form
+      onSubmit={doLogin}
+      validationRules={{
+        email: REQUIRED_EMAIL,
+        password: REQUIRED_PASSWORD,
+      }}
+      initialValue={{
+        email: "",
+        password: "",
+      }}
       className={`${
         sm ? "card w-[32rem] lg:w-[45rem]" : "px-8"
       } mx-auto max-w-3xl flex items-center flex-col`}
     >
-      <p className="font-20 text-secondary">{error}</p>
-      <TextInput
-        {...form.textInput("email", "email")}
-        className="my-8"
-        placeholder="User ID or Email"
-      />
-      <TextInput
-        {...form.textInput("password", "password")}
+      <FormErrors />
+      <FormField name="email" className="my-8" placeholder="User ID or Email" />
+      <FormField
+        name="password"
         className="my-8"
         placeholder="Password"
+        type="password"
       />
-      <ThemedButton variant="large" disabled={!enabled} className="my-8" caret>
-        Log in now
-      </ThemedButton>
+      {!user ? (
+        <FormSubmit variant="large" className="my-8" caret>
+          Log in now
+        </FormSubmit>
+      ) : (
+        <LoaderAnimation small />
+      )}
       <TextButton
         className="p-5"
         noSubmit
@@ -113,14 +124,17 @@ function LoginForm({ setShowForgotPassword }) {
       >
         Forgot password?
       </TextButton>
-      <UserRedirect noAuth />
-    </form>
+      <UserRedirect redirectOnUser />
+    </Form>
   );
 }
 
 const PasswordModal = ({ open, onClose }) => {
   const [sent, setSent] = useState(false);
-  const handler = useFormHandler({}, async (formData, form) => setSent(true));
+  const handler = useFormHandler({}, async (formData, ev) => {
+    ev.preventDefault();
+    setSent(true);
+  });
   return (
     <Dialog open={open} onClose={onClose} className="relative z-50">
       <div className="fixed inset-0 bg-black/50" aria-hidden={true} />
